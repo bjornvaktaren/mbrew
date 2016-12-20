@@ -9,6 +9,8 @@ struct fermentable
    std::string name;
    float weight = 0.0;
    bool mash = true;
+   float color = 0.0;
+   float extract = 0.0;
 };
 
 struct hop
@@ -34,6 +36,37 @@ struct yeast
    float time = 0.0;   
 };
 
+// float getIBU(hop h) 
+// {
+//    // grams x alpha x utilization x 0.55
+//    return 0.0
+// }
+
+namespace kConst{
+   float kkg2lbs = 2.20462262;
+   float kGal2Litre = 3.78541178;
+   float kEBC2SRM = 0.508;
+};
+
+float lovibondToSRM(float lovibond)
+{
+   return (1.3546*lovibond) - 0.76;
+}
+
+float srmToLovibond(float srm)
+{
+   return (srm + 0.76)/1.3546;
+}
+
+float getColorMoreyEBC(std::vector<fermentable> fermentables, float volume)
+{
+   float mcu = 0.0;
+   for ( fermentable f : fermentables ) {
+      mcu += f.weight*kConst::kkg2lbs*srmToLovibond(f.color*kConst::kEBC2SRM);
+   }
+   mcu = mcu/(volume/kConst::kGal2Litre);
+   return mcu;
+}
 
 std::vector<std::string> splitConfString(std::string s) 
 {
