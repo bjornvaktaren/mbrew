@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <map>
+#include <string.h>
 
 struct fermentable
 {
@@ -97,20 +98,45 @@ std::vector<std::string> splitConfString(std::string s)
    return strVector;
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+   std::string inputRecipe;
+   // Read user input
+   for ( int i = 1; i < argc; i++ ) {
+      if ( strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
+	 std::cout << "SYNOPSIS\n"
+		   << "        mbrew [OPTION]...\n\n"
+		   << "DESCRIPTION\n"
+		   << "        -r [RECIPE], --recipe [RECIPE]\n"
+		   << "                input recipe\n\n";
+      }
+      else if ( strcmp(argv[i], "--recipe") == 0 ||
+		strcmp(argv[i], "-r") == 0 ) {
+	 inputRecipe = std::string(argv[i+1]);
+	 ++i;
+      }
+      else {
+	 std::cout << "Unrecognized option: " << argv[i] << '\n';
+	 exit(EXIT_FAILURE);
+      }
+   }
+   if ( inputRecipe.empty() ) {
+      std::cout << "Please speficy an input recipe.\n";
+      exit(EXIT_FAILURE);
+   }
+   std::ifstream recipe(inputRecipe);
+
    std::map<std::string,std::string> metadata;
    std::vector<fermentable> fermentables;
    std::vector<hop> hops;
    std::vector<yeast> yeasts;
    std::vector<mash> mashes;
    std::string note;
-
-   std::ifstream recipe("recipe.conf");
    std::string line;
    std::string name;
    std::string style;
    std::vector<std::string> strings;
+   // Read recipe from file
    while ( std::getline(recipe,line) ) {
       if ( line.compare("# Metadata") == 0 ) {
 	 while ( !line.empty() ) {
