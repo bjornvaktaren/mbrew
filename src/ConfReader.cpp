@@ -48,8 +48,8 @@ void ConfReader::readFermentables(std::string fileName,
 	    for ( std::vector<fermentable>::iterator it = fermentables.begin();
 		  it != fermentables.end(); ++it ) {
 	       if ( it->name.compare(strings.at(0)) == 0 ) {
-		  it->extract = stof(strings.at(1));
-		  it->color = stof(strings.at(2));
+		  it->extract = stod(strings.at(1));
+		  it->color = stod(strings.at(2));
 	       }
 	    }
       	 }
@@ -88,7 +88,7 @@ void ConfReader::readRecipe(std::string fileName,
       	    strings = splitConfString(line);
       	    fermentable f;
       	    f.name = strings.at(0);
-      	    f.weight = stof(strings.at(1));
+      	    f.weight = stod(strings.at(1));
       	    if ( strings.size() > 2 ) {
       	       if ( strings.at(2).compare("mash") != 0 ) f.mash = false;
       	    }
@@ -102,9 +102,9 @@ void ConfReader::readRecipe(std::string fileName,
       	    strings = splitConfString(line);
       	    hop h;
       	    h.name = strings.at(0);
-      	    h.alpha = stof(strings.at(1));
-      	    h.weight = stof(strings.at(2));
-      	    h.time = stof(strings.at(3));
+      	    h.alpha = stod(strings.at(1));
+      	    h.weight = stod(strings.at(2));
+      	    h.time = stod(strings.at(3));
       	    hops.push_back(h);
       	 }
       }
@@ -115,8 +115,8 @@ void ConfReader::readRecipe(std::string fileName,
       	    strings = splitConfString(line);
       	    yeast y;
       	    y.name = strings.at(0);
-      	    y.temperature = stof(strings.at(1));
-      	    y.time = stof(strings.at(2));
+      	    y.temperature = stod(strings.at(1));
+      	    y.time = stod(strings.at(2));
       	    yeasts.push_back(y);
       	 }
       }
@@ -127,9 +127,9 @@ void ConfReader::readRecipe(std::string fileName,
       	    strings = splitConfString(line);
       	    mash m;
       	    m.name = strings.at(0);
-      	    m.volume = stof(strings.at(1));
-      	    m.temperature = stof(strings.at(2));
-      	    m.time = stof(strings.at(3));
+      	    m.volume = stod(strings.at(1));
+      	    m.temperature = stod(strings.at(2));
+      	    m.time = stod(strings.at(3));
       	    mashes.push_back(m);
       	 }
       }

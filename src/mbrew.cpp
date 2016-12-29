@@ -9,34 +9,51 @@
 #include <Components.hpp>
 #include <ConfReader.hpp>
 
-// float getIBU(hop h) 
-// {
-//    // grams x alpha x utilization x 0.55
-//    return 0.0
-// }
-
 namespace kConst{
-   float kkg2lbs = 2.20462262;
-   float kGal2Litre = 3.78541178;
-   float kEBC2SRM = 0.508;
+   double kkg2lbs = 2.20462262;
+   double kGal2Litre = 3.78541178;
+   double kEBC2SRM = 0.508;
 }
 
-float lovibondToSRM(float lovibond)
+double getIBU(hop h)
+{
+   // Using the Tinseth formula.
+   // grams x alpha x utilization x 0.55
+   // utilization = 1.65*0.000125^(Gb-1) * (1 - exp(-0.04*T))/4.15
+   // where Gb is the boil gravity and T is the boil time. (howtobrew.com)
+   double gravity = 1.050;
+   double utilization = ( 1.65*pow(0.000125, gravity - 1.0) *
+			 (1.0 - exp(-0.04 * h.time)) );
+   return h.weight*h.alpha*utilization*0.55;
+}
+
+double getSG(std::vector<fermentable> fermentables, double volume)
+{
+   double oechle = 0.0;
+   for ( auto f : fermentables ) {
+      oechle += 46.0*f.extract*f.weight*kConst::kkg2lbs*1e-5;
+      std::cout << "46.0 * " << f.extract << " * " << f.weight << " * " << 1e-5
+		<< " = " << oechle << '\n';
+   }
+   return (1.0 + oechle*1e-3/volume/kConst::kGal2Litre);
+}
+
+double lovibondToSRM(double lovibond)
 {
    return (1.3546*lovibond) - 0.76;
 }
 
-float srmToLovibond(float srm)
+double srmToLovibond(double srm)
 {
    return (srm + 0.76)/1.3546;
 }
 
-float getColorMoreyEBC(std::vector<fermentable> fermentables, float volume)
+double getColorMoreyEBC(std::vector<fermentable> fermentables, double volume)
 {
    // Calculates beer color in EBC using Morey's equation
    // MCU = (grain_color_in_lov * grain_weight_in_lbs) / volume_gallons;
    // SRM_color = 1.4922 * MCU^0.6859
-   float mcu = 0.0;
+   double mcu = 0.0;
    for ( fermentable f : fermentables ) {
       if ( !f.mash ) continue;
       mcu += 1e-3*f.weight*kConst::kkg2lbs*f.color*kConst::kEBC2SRM;
@@ -108,7 +125,8 @@ int main(int argc, char* argv[])
    std::cout << "# Hops\n";
    for ( auto h : hops ) {
       std::cout << h.name << "   " << h.alpha << "   " 
-		<< h.weight << "   " << h.time << '\n';
+		<< h.weight << "   " << h.time << "   "
+		<< getIBU(h) << '\n';
    }
    std::cout << '\n';
    std::cout << "# Yeast\n";
@@ -125,6 +143,7 @@ int main(int argc, char* argv[])
    std::cout << "\n# Note\n" << note;
 
    std::cout << "\n# Calculated stuff\n";
-   std::cout << "Color: " << getColorMoreyEBC(fermentables,12.0f) << " EBC\n";
+   std::cout << "Color: " << getColorMoreyEBC(fermentables,12.0) << " EBC\n";
+   std::cout << "SG: " << getSG(fermentables,10.0) << " \n";
    return 0;
 }
