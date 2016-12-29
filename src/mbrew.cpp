@@ -1,41 +1,13 @@
 #include <iostream>
-#include <sstream>
 #include <fstream>
 #include <vector>
 #include <map>
+#include <math.h>
 #include <string.h>
 
-struct fermentable
-{
-   std::string name;
-   float weight = 0.0;
-   bool mash = true;
-   float color = 0.0;
-   float extract = 0.0;
-};
-
-struct hop
-{
-   std::string name;
-   float alpha = 0.0;
-   float weight = 0.0;
-   float time = 0.0;
-};
-
-struct mash
-{
-   std::string name;
-   float volume = 0.0;
-   float temperature = 0.0;
-   float time = 0.0;   
-};
-
-struct yeast
-{
-   std::string name;
-   float temperature = 0.0;
-   float time = 0.0;   
-};
+// Local includes
+#include <Components.hpp>
+#include <ConfReader.hpp>
 
 // float getIBU(hop h) 
 // {
@@ -47,7 +19,7 @@ namespace kConst{
    float kkg2lbs = 2.20462262;
    float kGal2Litre = 3.78541178;
    float kEBC2SRM = 0.508;
-};
+}
 
 float lovibondToSRM(float lovibond)
 {
@@ -61,46 +33,25 @@ float srmToLovibond(float srm)
 
 float getColorMoreyEBC(std::vector<fermentable> fermentables, float volume)
 {
+   // Calculates beer color in EBC using Morey's equation
+   // MCU = (grain_color_in_lov * grain_weight_in_lbs) / volume_gallons;
+   // SRM_color = 1.4922 * MCU^0.6859
    float mcu = 0.0;
    for ( fermentable f : fermentables ) {
-      mcu += f.weight*kConst::kkg2lbs*srmToLovibond(f.color*kConst::kEBC2SRM);
+      if ( !f.mash ) continue;
+      mcu += 1e-3*f.weight*kConst::kkg2lbs*f.color*kConst::kEBC2SRM;
+      std::cout << f.weight << '*' << kConst::kkg2lbs << '*' 
+		<< f.color << '*' << kConst::kEBC2SRM << '\n';
    }
    mcu = mcu/(volume/kConst::kGal2Litre);
-   return mcu;
+   return 1.4922*pow(mcu,0.6859)/kConst::kEBC2SRM; // Morey's formula
 }
 
-std::vector<std::string> splitConfString(std::string s) 
-{
-   std::vector<std::string> strVector;
-   std::stringstream strStream;
-   bool isInsideQuote = false;
-   for ( char& c : s ) {
-      if ( c == '\"' ) {
-	 isInsideQuote = !isInsideQuote;
-	 if ( !strStream.str().empty() ) {
-	    strVector.push_back(strStream.str());
-	    strStream.str("");
-	    continue;
-	 }
-	 continue;
-      }
-      if ( isInsideQuote ) strStream << c;
-      else if ( c == ' ' || c == '\t' || c == '=' ) {
-	 if ( !strStream.str().empty() ) {
-	    strVector.push_back(strStream.str());
-	    strStream.str("");
-	    continue;
-	 }
-      }
-      else strStream << c;
-   }
-   if ( !strStream.str().empty() ) strVector.push_back(strStream.str());
-   return strVector;
-}
 
 int main(int argc, char* argv[])
 {
    std::string inputRecipe;
+   std::string fermentablesFileName = "ferms.conf";
    // Read user input
    for ( int i = 1; i < argc; i++ ) {
       if ( strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
@@ -115,119 +66,34 @@ int main(int argc, char* argv[])
 	 inputRecipe = std::string(argv[i+1]);
 	 ++i;
       }
+      else if ( strcmp(argv[i], "--fermentables") == 0 ||
+		strcmp(argv[i], "-f") == 0 ) {
+	 fermentablesFileName = std::string(argv[i+1]);
+	 ++i;
+      }
       else {
 	 std::cout << "Unrecognized option: " << argv[i] << '\n';
 	 exit(EXIT_FAILURE);
       }
    }
    if ( inputRecipe.empty() ) {
-      std::cout << "Please speficy an input recipe.\n";
+      std::cout << "Please specify an input recipe.\n";
       exit(EXIT_FAILURE);
    }
-   std::ifstream recipe(inputRecipe);
-
+   if ( fermentablesFileName.compare("ferms.conf") == 0 ) {
+      std::cout << "WARNING: fermentables configuration file not specified. "
+		<< "Using default " << fermentablesFileName << '\n';
+   }
    std::map<std::string,std::string> metadata;
    std::vector<fermentable> fermentables;
    std::vector<hop> hops;
    std::vector<yeast> yeasts;
    std::vector<mash> mashes;
    std::string note;
-   std::string line;
-   std::string name;
-   std::string style;
-   std::vector<std::string> strings;
-   // Read recipe from file
-   while ( std::getline(recipe,line) ) {
-      if ( line.compare("# Metadata") == 0 ) {
-	 while ( !line.empty() ) {
-	    std::getline(recipe,line);
-	    if ( line.empty() ) break;
-	    else if ( line.at(0) == '#' ) continue;
-	    strings = splitConfString(line);
-	    metadata[strings.at(0)] = strings.at(1);
-	 }
-      }
-      else if ( line.compare("# Fermentables") == 0 ) {
-	 while ( std::getline(recipe,line) ) {
-	    if ( line.empty() ) break;
-	    else if ( line.at(0) == '#' ) continue;
-	    strings = splitConfString(line);
-	    fermentable f;
-	    f.name = strings.at(0);
-	    f.weight = stof(strings.at(1));
-	    if ( strings.size() > 2 ) {
-	       if ( strings.at(2).compare("mash") != 0 ) f.mash = false;
-	    }
-	    fermentables.push_back(f);
-	 }
-      }
-      else if ( line.compare("# Hops") == 0 ) {
-	 while ( std::getline(recipe,line) ) {
-	    if ( line.empty() ) break;
-	    else if ( line.at(0) == '#' ) continue;
-	    strings = splitConfString(line);
-	    hop h;
-	    h.name = strings.at(0);
-	    h.alpha = stof(strings.at(1));
-	    h.weight = stof(strings.at(2));
-	    h.time = stof(strings.at(3));
-	    hops.push_back(h);
-	 }
-      }
-      else if ( line.compare("# Yeast") == 0 ) {
-	 while ( std::getline(recipe,line) ) {
-	    if ( line.empty() ) break;
-	    else if ( line.at(0) == '#' ) continue;
-	    strings = splitConfString(line);
-	    yeast y;
-	    y.name = strings.at(0);
-	    y.temperature = stof(strings.at(1));
-	    y.time = stof(strings.at(2));
-	    yeasts.push_back(y);
-	 }
-      }
-      else if ( line.compare("# Mash") == 0 ) {
-	 while ( std::getline(recipe,line) ) {
-	    if ( line.empty() ) break;
-	    else if ( line.at(0) == '#' ) continue;
-	    strings = splitConfString(line);
-	    mash m;
-	    m.name = strings.at(0);
-	    m.volume = stof(strings.at(1));
-	    m.temperature = stof(strings.at(2));
-	    m.time = stof(strings.at(3));
-	    mashes.push_back(m);
-	 }
-      }
-      else if ( line.compare("# Notes") == 0 ) {
-	 std::stringstream noteStream;
-	 bool isInsideQuote = false;
-	 while ( std::getline(recipe,line) ) {
-	    if ( line.empty() && !isInsideQuote ) break;
-	    else if ( isInsideQuote ) {
-	       if ( line.empty() ) noteStream << '\n';
-	       else if ( line.at(line.size() - 1) == '"' ) {
-		  if ( !line.compare("\"") == 0 ) { 
-		     noteStream << line.substr(0, line.size() - 1) << '\n';
-		  }
-		  isInsideQuote = false;
-	       }
-	       else noteStream << line << '\n';
-	    }
-	    else if ( line.at(0) == '#' ) continue;
-	    else if ( line.at(0) == '"' ) {
-	       noteStream << line.substr(1, line.size() - 1) << '\n';
-	       isInsideQuote = true;
-	       continue;
-	    }
-	    else {
-	       noteStream << line;
-	       noteStream << '\n';
-	    }
-	 }
-	 note = noteStream.str();
-      }
-   }
+   ConfReader confReader;
+   confReader.readRecipe(inputRecipe, metadata, fermentables, hops, yeasts,
+   			 mashes, note);
+   confReader.readFermentables(fermentablesFileName, fermentables);
    std::cout << "# Metadata\n";
    for ( auto m : metadata ) {
       std::cout << m.first << "   " << m.second << '\n';
@@ -235,7 +101,8 @@ int main(int argc, char* argv[])
    std::cout << '\n';
    std::cout << "# Fermentables\n";
    for ( auto f : fermentables ) {
-      std::cout << f.name << "   " << f.weight << "   " << f.mash << '\n';
+      std::cout << f.name << "   " << f.weight << "   " << f.mash << "   "
+		<< f.color << "   " << f.extract << '\n';
    }
    std::cout << '\n';
    std::cout << "# Hops\n";
@@ -256,5 +123,8 @@ int main(int argc, char* argv[])
 		<< m.temperature << "   " << m.time << '\n';
    }
    std::cout << "\n# Note\n" << note;
+
+   std::cout << "\n# Calculated stuff\n";
+   std::cout << "Color: " << getColorMoreyEBC(fermentables,12.0f) << " EBC\n";
    return 0;
 }
