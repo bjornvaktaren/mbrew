@@ -26,6 +26,7 @@ public:
 		   std::vector<mash> &mashes,
 		   std::string &note
 		   );
+   void readBrewery(std::string fileName, brewery &b);
 private:
    std::string m_recipe;
 };

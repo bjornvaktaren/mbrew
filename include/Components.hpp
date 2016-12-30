@@ -33,4 +33,14 @@ struct yeast
    double time = 0.0;   
 };
 
+struct brewery
+{
+   std::string name = "Default";
+   double efficiency = 1.0;
+   double mashDeadSpace = 0.0;
+   double waterLostToMalt = 1.1;
+   double mashTunMass = 0.0;
+   std::string mashTunMaterial;
+};
+
 #endif

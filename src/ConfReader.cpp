@@ -6,6 +6,7 @@ std::vector<std::string> ConfReader::splitConfString(std::string s)
    std::stringstream strStream;
    bool isInsideQuote = false;
    for ( char& c : s ) {
+      if ( c == '#' ) break;
       if ( c == '\"' ) {
 	 isInsideQuote = !isInsideQuote;
 	 if ( !strStream.str().empty() ) {
@@ -160,6 +161,45 @@ void ConfReader::readRecipe(std::string fileName,
       	    }
       	 }
       	 note = noteStream.str();
+      }
+   }
+}
+
+void ConfReader::readBrewery(std::string fileName, brewery &b)
+{
+   std::ifstream confFile(fileName);
+   if ( !confFile.is_open() ) {
+      std::cerr << "ERROR: Could not open " << fileName << '\n';
+   }
+   std::string line;
+   std::vector<std::string> strings;
+   // Read fermentables from file
+   while ( std::getline(confFile,line) ) {
+      if ( line.compare("# Brewery") == 0 ) {
+      	 while ( std::getline(confFile,line) ) {
+      	    if ( line.empty() ) break;
+      	    else if ( line.at(0) == '#' ) continue;
+      	    strings = splitConfString(line);
+	    if ( strings.at(0).compare("Name") == 0 ) {
+	       b.name = strings.at(1);
+	    }
+	    else if ( strings.at(0).compare("Efficiency") == 0 ) {
+	       b.efficiency = stod(strings.at(1));
+	    }
+	    else if ( strings.at(0).compare("MashDeadSpace") == 0 ) {
+	       b.mashDeadSpace = stod(strings.at(1));
+	    }
+	    else if ( strings.at(0).compare("WaterLostToMalt") == 0 ) {
+	       b.waterLostToMalt = stod(strings.at(1));
+	    }
+	    else if ( strings.at(0).compare("MashTunMass") == 0 ) {
+	       b.mashTunMass = stod(strings.at(1));
+	    }
+	    else if ( strings.at(0).compare("MashTunMaterial") == 0 ) {
+	       b.mashTunMaterial = strings.at(1);
+	    }
+      	 }
+	 break;
       }
    }
 }
