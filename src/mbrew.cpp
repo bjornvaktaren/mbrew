@@ -15,27 +15,31 @@ namespace kConst{
    double kEBC2SRM = 0.508;
 }
 
-double getIBU(hop h)
+double getIBU(hop h, double gravity)
 {
    // Using the Tinseth formula.
    // grams x alpha x utilization x 0.55
    // utilization = 1.65*0.000125^(Gb-1) * (1 - exp(-0.04*T))/4.15
    // where Gb is the boil gravity and T is the boil time. (howtobrew.com)
-   double gravity = 1.050;
    double utilization = ( 1.65*pow(0.000125, gravity - 1.0) *
 			 (1.0 - exp(-0.04 * h.time)) );
    return h.weight*h.alpha*utilization*0.55;
 }
 
-double getSG(std::vector<fermentable> fermentables, double volume)
+double getOechle(fermentable f, double volume, double eff)
+{
+   double oechle = 0.0;
+   oechle += 46.0*f.extract*f.weight*kConst::kkg2lbs*1e-5;
+   return eff*oechle/volume*kConst::kGal2Litre;
+}
+
+double getSG(std::vector<fermentable> fermentables, double volume, double eff)
 {
    double oechle = 0.0;
    for ( auto f : fermentables ) {
       oechle += 46.0*f.extract*f.weight*kConst::kkg2lbs*1e-5;
-      std::cout << "46.0 * " << f.extract << " * " << f.weight << " * " << 1e-5
-		<< " = " << oechle << '\n';
    }
-   return (1.0 + oechle*1e-3/volume/kConst::kGal2Litre);
+   return (1.0 + eff*oechle*1e-3/volume*kConst::kGal2Litre);
 }
 
 double lovibondToSRM(double lovibond)
@@ -57,8 +61,6 @@ double getColorMoreyEBC(std::vector<fermentable> fermentables, double volume)
    for ( fermentable f : fermentables ) {
       if ( !f.mash ) continue;
       mcu += 1e-3*f.weight*kConst::kkg2lbs*f.color*kConst::kEBC2SRM;
-      std::cout << f.weight << '*' << kConst::kkg2lbs << '*' 
-		<< f.color << '*' << kConst::kEBC2SRM << '\n';
    }
    mcu = mcu/(volume/kConst::kGal2Litre);
    return 1.4922*pow(mcu,0.6859)/kConst::kEBC2SRM; // Morey's formula
@@ -76,7 +78,10 @@ int main(int argc, char* argv[])
 		   << "        mbrew [OPTION]...\n\n"
 		   << "DESCRIPTION\n"
 		   << "        -r [RECIPE], --recipe [RECIPE]\n"
-		   << "                input recipe\n\n";
+		   << "                input recipe file\n\n"
+		   << "        -f [FERMENTABLES], --recipe [FERMENTABLES]\n"
+		   << "                fermentables specfication file, "
+		   << "default is ferms.conf\n\n";
       }
       else if ( strcmp(argv[i], "--recipe") == 0 ||
 		strcmp(argv[i], "-r") == 0 ) {
@@ -119,14 +124,17 @@ int main(int argc, char* argv[])
    std::cout << "# Fermentables\n";
    for ( auto f : fermentables ) {
       std::cout << f.name << "   " << f.weight << "   " << f.mash << "   "
-		<< f.color << "   " << f.extract << '\n';
+		<< f.color << "   " << f.extract << "   " 
+		<< getOechle(f,10.0,0.8) << '\n';
    }
    std::cout << '\n';
    std::cout << "# Hops\n";
+   double totalIBU = 0.0;
    for ( auto h : hops ) {
       std::cout << h.name << "   " << h.alpha << "   " 
 		<< h.weight << "   " << h.time << "   "
-		<< getIBU(h) << '\n';
+		<< getIBU(h,getSG(fermentables,10.0,0.8)) << '\n';
+      totalIBU += getIBU(h,getSG(fermentables,10.0,0.8));
    }
    std::cout << '\n';
    std::cout << "# Yeast\n";
@@ -144,6 +152,7 @@ int main(int argc, char* argv[])
 
    std::cout << "\n# Calculated stuff\n";
    std::cout << "Color: " << getColorMoreyEBC(fermentables,12.0) << " EBC\n";
-   std::cout << "SG: " << getSG(fermentables,10.0) << " \n";
+   std::cout << "SG: " << getSG(fermentables,10.0,0.8) << " \n";
+   std::cout << "IBU: " << totalIBU << " \n";
    return 0;
 }
