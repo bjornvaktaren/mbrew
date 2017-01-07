@@ -119,13 +119,11 @@ int main(int argc, char* argv[])
    }
    std::cout << '\n';
    std::cout << "# Hops\n";
-   double totalIBU = 0.0;
    for ( auto h : hops ) {
       std::cout << h.name << "   " << h.alpha << "   " 
 		<< h.weight << "   " << h.time << "   "
-		<< brew.getIBU(h,brew.getSG(10.0)) 
+		<< brew.getIBU(h) 
 		<< '\n';
-      totalIBU += brew.getIBU(h,brew.getSG(10.0));
    }
    std::cout << '\n';
    std::cout << "# Yeast\n";
@@ -154,6 +152,6 @@ int main(int argc, char* argv[])
 	     << "OG: " << brew.getPostboilSG() << " \n"
 	     << "Estimated FG: " << brew.getFGLow() << " to " 
 	     << brew.getFGHigh() << '\n'
-	     << "IBU: " << totalIBU << " \n";
+	     << "IBU: " << brew.getTotalIBU() << " \n";
    return EXIT_SUCCESS;
 }

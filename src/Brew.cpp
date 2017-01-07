@@ -4,7 +4,9 @@ Brew::Brew(brewery brewery,
 	   std::vector<fermentable> fermentables, 
 	   std::vector<mash> mashes, 
 	   std::vector<hop> hops) : 
-   m_brewery(brewery), m_fermentables(fermentables), m_mashes(mashes), 
+   m_brewery(brewery), 
+   m_fermentables(fermentables), 
+   m_mashes(mashes), 
    m_hops(hops)
 {
 
@@ -15,8 +17,11 @@ Brew::Brew(brewery brewery,
 	   std::vector<mash> mashes, 
 	   std::vector<hop> hops,
 	   std::vector<yeast> yeasts) : 
-   m_brewery(brewery), m_fermentables(fermentables), m_mashes(mashes), 
-   m_hops(hops), m_yeasts(yeasts)
+   m_brewery(brewery), 
+   m_fermentables(fermentables), 
+   m_mashes(mashes), 
+   m_hops(hops), 
+   m_yeasts(yeasts)
 {
 
 }
@@ -36,7 +41,7 @@ double Brew::getPreboilVolume()
 	   - m_brewery.mashDeadSpace);
 }
 
-double Brew::getPostboilVolume()
+double Brew::getBoilDuration()
 {
    double boilTime = 0.0;
    // look if total boil time is specified in mashes
@@ -46,10 +51,22 @@ double Brew::getPostboilVolume()
 	 boilTime = m.time;
       }
    }
-   // if boil not specified in mashed, take from the longest hop addition
+   // if boil not specified in mashed, or if the longest hop addition is longer,
+   // take from the longest hop addition
    for ( auto h : m_hops ) {
       if ( h.time > boilTime ) boilTime = h.time;
    }
+   return boilTime;
+}
+
+double Brew::getPostboilVolume()
+{
+   return ( getPreboilVolume() 
+	    - m_brewery.boilEvaporationRate*getBoilDuration()/60.0 );
+}
+
+double Brew::getVolumeAtTime(double boilTime)
+{
    return getPreboilVolume() - m_brewery.boilEvaporationRate*boilTime/60.0;
 }
 
@@ -63,15 +80,30 @@ double Brew::getVolumeIntoFermenter()
 	   - m_brewery.waterLostToHops*hopsMass);
 }
 
-double Brew::getIBU(hop h, double gravity)
+double Brew::getIBU(hop h)
 {
    // Using the Tinseth formula.
-   // IBU = grams x alpha x utilization x 0.55
+   // IBU = milligrams per liter alpha acid, so
+   // IBU = (milligrams_of_hops*alpha_percent/liters_of_wort)*utilization
    // utilization = 1.65*0.000125^(Gb-1) * (1 - exp(-0.04*T))/4.15
    // where Gb is the boil gravity and T is the boil time. (howtobrew.com)
-   double utilization = ( 1.65*pow(0.000125, gravity - 1.0) *
-			 (1.0 - exp(-0.04 * h.time)) );
-   return h.weight*h.alpha*utilization*0.55;
+
+   // calculate average gravity
+   double gravity = 0.5*getSG( getVolumeAtTime( getBoilDuration() - h.time ) );
+   gravity += 0.5*getSG( getPostboilVolume() );
+   double utilization = ( 1.65 * pow(1.25e-4, gravity - 1.0) *
+			  (1.0 - exp(-0.04 * h.time) ) / 4.15 );
+   return ( m_brewery.hopsUtilization * 10.0 * h.weight * h.alpha * utilization
+	    / getPostboilVolume() );
+}
+
+double Brew::getTotalIBU()
+{
+   double ibu = 0.0;
+   for ( auto h : m_hops ) {
+      ibu += getIBU(h);
+   }
+   return ibu;
 }
 
 double Brew::getOechle(fermentable f, double volume)

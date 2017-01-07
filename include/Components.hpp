@@ -47,6 +47,7 @@ struct brewery
    double waterLostToMalt = 1.085; // liter/kg
    double waterLostToHops = 0.00835; // liter/gram
    double mashTunMass = 0.0;
+   double hopsUtilization = 1.0;
    std::string mashTunMaterial;
 };
 

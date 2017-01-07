@@ -31,13 +31,16 @@ public:
    double getPreboilVolume();
    double getPostboilVolume();
    double getVolumeIntoFermenter();
+   double getVolumeAtTime(double boilTime);
 
-   double getIBU(hop h, double gravity);
+   double getIBU(hop h);
+   double getTotalIBU();
 
    double getOechle(fermentable f, double volume);
    double getSG(double volume);
    double getPreboilSG();
    double getPostboilSG();
+   double getBoilDuration();
    double getFGHigh();
    double getFGLow();
 
