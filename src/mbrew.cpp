@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <map>
@@ -143,15 +144,22 @@ int main(int argc, char* argv[])
 	     << brewery.name << "   " << brewery.efficiency << "   " 
 	     << brewery.waterLostToMalt << "   " << brewery.mashDeadSpace 
 	     << '\n'
-	     << "\n# Calculated stuff\n"
-	     << "Color: " << brew.getColorMoreyEBC() << " EBC\n"
-	     << "Preboil Volume: " << brew.getPreboilVolume() << " \n"
-	     << "Postboil Volume: " << brew.getPostboilVolume() << " \n"
-	     << "Fermenter Volume: " << brew.getVolumeIntoFermenter() << " \n"
-	     << "Preboil SG: " << brew.getPreboilSG() << " \n"
-	     << "OG: " << brew.getPostboilSG() << " \n"
-	     << "Estimated FG: " << brew.getFGLow() << " to " 
+
+	     << "\n# Estimations\n" << std::setiosflags(std::ios::fixed) 
+	     << std::setprecision(0) 
+	     << "Color:               " << brew.getColorMoreyEBC() << " EBC\n"
+	     << std::setprecision(1)
+	     << "Preboil Volume:      " << brew.getPreboilVolume() << " liter\n"
+	     << "Postboil Volume:     " << brew.getPostboilVolume() 
+	     << " liter\n"
+	     << "Fermenter Volume:    " << brew.getVolumeIntoFermenter() 
+	     << " liter\n"
+	     << std::setprecision(3)
+	     << "Preboil Gravity:     " << brew.getPreboilSG() << " \n"
+	     << "Postboil Gravity:    " << brew.getPostboilSG() << " \n"
+	     << "Postferment Gravity: " << brew.getFGLow() << " to " 
 	     << brew.getFGHigh() << '\n'
-	     << "IBU: " << brew.getTotalIBU() << " \n";
+	     << std::setprecision(0)
+	     << "Bitterness:          " << brew.getTotalIBU() << " IBU\n";
    return EXIT_SUCCESS;
 }
