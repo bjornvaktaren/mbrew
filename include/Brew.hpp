@@ -43,8 +43,7 @@ public:
 
    double lovibondToSRM(double lovibond);
    double srmToLovibond(double srm);
-   double getColorMoreyEBC(std::vector<fermentable> fermentables, 
-			   double volume);
+   double getColorMoreyEBC();
 private:
    brewery m_brewery;
    std::vector<fermentable> m_fermentables;

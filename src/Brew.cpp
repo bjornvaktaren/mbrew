@@ -132,16 +132,16 @@ double Brew::srmToLovibond(double srm)
    return (srm + 0.76)/1.3546;
 }
 
-double Brew::getColorMoreyEBC(std::vector<fermentable> fermentables, double volume)
+double Brew::getColorMoreyEBC()
 {
    // Calculates beer color in EBC using Morey's equation
    // MCU = (grain_color_in_lov * grain_weight_in_lbs) / volume_gallons;
    // SRM_color = 1.4922 * MCU^0.6859
    double mcu = 0.0;
-   for ( fermentable f : fermentables ) {
+   for ( fermentable f : m_fermentables ) {
       if ( !f.mash ) continue;
       mcu += 1e-3*f.weight*kConst::kkg2lbs*f.color*kConst::kEBC2SRM;
    }
-   mcu = mcu/(volume/kConst::kGal2Litre);
+   mcu = mcu/(getPostboilVolume()/kConst::kGal2Litre);
    return 1.4922*pow(mcu,0.6859)/kConst::kEBC2SRM; // Morey's formula
 }

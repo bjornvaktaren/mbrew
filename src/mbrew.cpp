@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
 	     << brewery.waterLostToMalt << "   " << brewery.mashDeadSpace 
 	     << '\n'
 	     << "\n# Calculated stuff\n"
-	     << "Color: " << brew.getColorMoreyEBC(fermentables,12.0) << " EBC\n"
+	     << "Color: " << brew.getColorMoreyEBC() << " EBC\n"
 	     << "Preboil Volume: " << brew.getPreboilVolume() << " \n"
 	     << "Postboil Volume: " << brew.getPostboilVolume() << " \n"
 	     << "Fermenter Volume: " << brew.getVolumeIntoFermenter() << " \n"
