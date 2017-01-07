@@ -18,6 +18,8 @@ public:
    std::vector<std::string> splitConfString(std::string s);
    void readFermentables(std::string fileName,
 			 std::vector<fermentable> &fermentables);
+   void readYeasts(std::string fileName,
+		   std::vector<yeast> &yeasts);
    void readRecipe(std::string fileName,
 		   std::map<std::string,std::string> &metadata,
 		   std::vector<fermentable> &fermentables,

@@ -30,6 +30,36 @@ std::vector<std::string> ConfReader::splitConfString(std::string s)
    return strVector;
 }
 
+void ConfReader::readYeasts(std::string fileName,
+			    std::vector<yeast> &yeasts)
+{
+   std::ifstream confFile(fileName);
+   if ( !confFile.is_open() ) {
+      std::cerr << "ERROR: Could not open " << fileName << '\n';
+   }
+   std::string line;
+   std::vector<std::string> strings;
+   // Read fermentables from file
+   while ( std::getline(confFile,line) ) {
+      if ( line.compare("# Yeast") == 0 ) {
+      	 while ( std::getline(confFile,line) ) {
+      	    if ( line.empty() ) break;
+      	    else if ( line.at(0) == '#' ) continue;
+      	    strings = splitConfString(line);
+	    for ( std::vector<yeast>::iterator it = yeasts.begin();
+		  it != yeasts.end(); ++it ) {
+	       if ( it->name.compare(strings.at(0)) == 0 ) {
+		  it->attenuationLow = stod(strings.at(1));
+		  it->attenuationHigh = stod(strings.at(2));
+	       }
+	    }
+      	 }
+	 break;
+      }
+   }
+   confFile.close();
+}
+
 void ConfReader::readFermentables(std::string fileName,
 				  std::vector<fermentable> &fermentables)
 {
@@ -57,6 +87,7 @@ void ConfReader::readFermentables(std::string fileName,
 	 break;
       }
    }
+   confFile.close();
 }
 				  
 void ConfReader::readRecipe(std::string fileName,
@@ -163,6 +194,7 @@ void ConfReader::readRecipe(std::string fileName,
       	 note = noteStream.str();
       }
    }
+   recipe.close();
 }
 
 void ConfReader::readBrewery(std::string fileName, brewery &b)
@@ -186,11 +218,20 @@ void ConfReader::readBrewery(std::string fileName, brewery &b)
 	    else if ( strings.at(0).compare("Efficiency") == 0 ) {
 	       b.efficiency = stod(strings.at(1));
 	    }
+	    else if ( strings.at(0).compare("BoilEvaporationRate") == 0 ) {
+	       b.boilEvaporationRate = stod(strings.at(1));
+	    }
 	    else if ( strings.at(0).compare("MashDeadSpace") == 0 ) {
 	       b.mashDeadSpace = stod(strings.at(1));
 	    }
+	    else if ( strings.at(0).compare("KettleDeadSpace") == 0 ) {
+	       b.kettleDeadSpace = stod(strings.at(1));
+	    }
 	    else if ( strings.at(0).compare("WaterLostToMalt") == 0 ) {
 	       b.waterLostToMalt = stod(strings.at(1));
+	    }
+	    else if ( strings.at(0).compare("WaterLostToHops") == 0 ) {
+	       b.waterLostToHops = stod(strings.at(1));
 	    }
 	    else if ( strings.at(0).compare("MashTunMass") == 0 ) {
 	       b.mashTunMass = stod(strings.at(1));
@@ -202,4 +243,5 @@ void ConfReader::readBrewery(std::string fileName, brewery &b)
 	 break;
       }
    }
+   confFile.close();
 }

@@ -2,82 +2,19 @@
 #include <fstream>
 #include <vector>
 #include <map>
-#include <math.h>
 #include <string.h>
 
 // Local includes
 #include <Components.hpp>
 #include <ConfReader.hpp>
-
-namespace kConst{
-   double kkg2lbs = 2.20462262;
-   double kGal2Litre = 3.78541178;
-   double kEBC2SRM = 0.508;
-}
-
-double getPreboilVolume(brewery brewery, 
-			std::string<fermentable> fermentables, 
-			std::string<mashe> mashes)
-{
-   return 0.0;
-}
-
-double getIBU(hop h, double gravity)
-{
-   // Using the Tinseth formula.
-   // grams x alpha x utilization x 0.55
-   // utilization = 1.65*0.000125^(Gb-1) * (1 - exp(-0.04*T))/4.15
-   // where Gb is the boil gravity and T is the boil time. (howtobrew.com)
-   double utilization = ( 1.65*pow(0.000125, gravity - 1.0) *
-			 (1.0 - exp(-0.04 * h.time)) );
-   return h.weight*h.alpha*utilization*0.55;
-}
-
-double getOechle(fermentable f, double volume, double eff)
-{
-   double oechle = 0.0;
-   oechle += 46.0*f.extract*f.weight*kConst::kkg2lbs*1e-5;
-   return eff*oechle/volume*kConst::kGal2Litre;
-}
-
-double getSG(std::vector<fermentable> fermentables, double volume, double eff)
-{
-   double oechle = 0.0;
-   for ( auto f : fermentables ) {
-      oechle += 46.0*f.extract*f.weight*kConst::kkg2lbs*1e-5;
-   }
-   return (1.0 + eff*oechle*1e-3/volume*kConst::kGal2Litre);
-}
-
-double lovibondToSRM(double lovibond)
-{
-   return (1.3546*lovibond) - 0.76;
-}
-
-double srmToLovibond(double srm)
-{
-   return (srm + 0.76)/1.3546;
-}
-
-double getColorMoreyEBC(std::vector<fermentable> fermentables, double volume)
-{
-   // Calculates beer color in EBC using Morey's equation
-   // MCU = (grain_color_in_lov * grain_weight_in_lbs) / volume_gallons;
-   // SRM_color = 1.4922 * MCU^0.6859
-   double mcu = 0.0;
-   for ( fermentable f : fermentables ) {
-      if ( !f.mash ) continue;
-      mcu += 1e-3*f.weight*kConst::kkg2lbs*f.color*kConst::kEBC2SRM;
-   }
-   mcu = mcu/(volume/kConst::kGal2Litre);
-   return 1.4922*pow(mcu,0.6859)/kConst::kEBC2SRM; // Morey's formula
-}
-
+#include <Brew.hpp>
+#include <Constants.hpp>
 
 int main(int argc, char* argv[])
 {
    std::string inputRecipe;
    std::string fermentablesFileName = "ferms.conf";
+   std::string yeastFileName = "yeast.conf";
    std::string breweryFileName = "brewery.conf";
    // Read user input
    for ( int i = 1; i < argc; i++ ) {
@@ -85,12 +22,15 @@ int main(int argc, char* argv[])
 	 std::cout << "SYNOPSIS\n"
 		   << "        mbrew [OPTION]...\n\n"
 		   << "DESCRIPTION\n"
-		   << "        -r [RECIPE], --recipe [RECIPE]\n"
+		   << "        -r FILE, --recipe FILE\n"
 		   << "                input recipe file\n\n"
-		   << "        -f [FERMENTABLES], --recipe [FERMENTABLES]\n"
+		   << "        -f FILE, --fermentables FILE\n"
 		   << "                fermentables specfication file, "
 		   << "default is ferms.conf\n\n"
-		   << "        -b [BREWERY], --brewery [BREWERY]\n"
+		   << "        -y FILE, --yeast FILE\n"
+		   << "                yeast specfication file, "
+		   << "default is yeast.conf\n\n"
+		   << "        -b FILE, --brewery FILE\n"
 		   << "                brewery specfication file, "
 		   << "default is brewery.conf\n\n";
       }
@@ -102,6 +42,11 @@ int main(int argc, char* argv[])
       else if ( strcmp(argv[i], "--fermentables") == 0 ||
 		strcmp(argv[i], "-f") == 0 ) {
 	 fermentablesFileName = std::string(argv[i+1]);
+	 ++i;
+      }
+      else if ( strcmp(argv[i], "--yeast") == 0 ||
+		strcmp(argv[i], "-y") == 0 ) {
+	 yeastFileName = std::string(argv[i+1]);
 	 ++i;
       }
       else if ( strcmp(argv[i], "--brewery") == 0 ||
@@ -137,7 +82,11 @@ int main(int argc, char* argv[])
    confReader.readRecipe(inputRecipe, metadata, fermentables, hops, yeasts,
    			 mashes, note);
    confReader.readFermentables(fermentablesFileName, fermentables);
+   confReader.readYeasts(yeastFileName, yeasts);
    confReader.readBrewery(breweryFileName, brewery);
+   Brew brew(brewery, fermentables, mashes, hops, yeasts);
+   brew.setNote(note);
+   brew.setMetadata(metadata);
    std::cout << "# Metadata\n";
    for ( auto m : metadata ) {
       std::cout << m.first << "   " << m.second << '\n';
@@ -147,7 +96,7 @@ int main(int argc, char* argv[])
    for ( auto f : fermentables ) {
       std::cout << f.name << "   " << f.weight << "   " << f.mash << "   "
 		<< f.color << "   " << f.extract << "   " 
-		<< getOechle(f, 10.0, brewery.efficiency) << '\n';
+		<< brew.getOechle(f, 10.0) << '\n';
    }
    std::cout << '\n';
    std::cout << "# Hops\n";
@@ -155,9 +104,9 @@ int main(int argc, char* argv[])
    for ( auto h : hops ) {
       std::cout << h.name << "   " << h.alpha << "   " 
 		<< h.weight << "   " << h.time << "   "
-		<< getIBU(h,getSG(fermentables,10.0,brewery.efficiency)) 
+		<< brew.getIBU(h,brew.getSG(10.0)) 
 		<< '\n';
-      totalIBU += getIBU(h,getSG(fermentables,10.0,brewery.efficiency));
+      totalIBU += brew.getIBU(h,brew.getSG(10.0));
    }
    std::cout << '\n';
    std::cout << "# Yeast\n";
@@ -178,8 +127,14 @@ int main(int argc, char* argv[])
 	     << brewery.waterLostToMalt << "   " << brewery.mashDeadSpace 
 	     << '\n'
 	     << "\n# Calculated stuff\n"
-	     << "Color: " << getColorMoreyEBC(fermentables,12.0) << " EBC\n"
-	     << "SG: " << getSG(fermentables,12.0,brewery.efficiency) << " \n"
+	     << "Color: " << brew.getColorMoreyEBC(fermentables,12.0) << " EBC\n"
+	     << "Preboil Volume: " << brew.getPreboilVolume() << " \n"
+	     << "Postboil Volume: " << brew.getPostboilVolume() << " \n"
+	     << "Fermenter Volume: " << brew.getVolumeIntoFermenter() << " \n"
+	     << "Preboil SG: " << brew.getPreboilSG() << " \n"
+	     << "OG: " << brew.getPostboilSG() << " \n"
+	     << "Estimated FG: " << brew.getFGLow() << " to " 
+	     << brew.getFGHigh() << '\n'
 	     << "IBU: " << totalIBU << " \n";
    return 0;
 }

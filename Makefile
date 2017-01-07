@@ -1,10 +1,10 @@
 OBJ_DIR=obj
 SRC_DIR=src
 LIB_DIR=lib
-CXX_FLAGS=-std=c++11 -Iinclude -Wunused-variable -Wall -Wpedantic
+CXXFLAGS=-g -O0 -fPIC -std=c++11 -Iinclude -Wunused-variable -Wall -Wpedantic
 CXX=g++
 
-OBJS=ConfReader.o mbrew.o
+OBJS=ConfReader.o Brew.o
 
 all: mbrew
 
@@ -14,15 +14,14 @@ $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
-	$(CXX) -fPIC -c -g $(CXX_FLAGS) -o $@ $<
+	$(CXX) -c -o $@ $< $(CXXFLAGS) 
 
 $(LIB_DIR)/libmbrew.so: $(addprefix $(OBJ_DIR)/,$(OBJS))  | $(LIB_DIR)
-	$(CXX) -shared $^ $(LIBS) -o $@
+	$(CXX) -shared $^ -o $@
 
-mbrew: $(LIB_DIR)/libmbrew.so
-	$(CXX) -g -O0 -o $@ $^ $(LIBS)
-# g++ $(SRC_DIR)/mbrew.cpp -o mbrew $(CXX_FLAGS)
-
+mbrew: $(SRC_DIR)/mbrew.cpp $(LIB_DIR)/libmbrew.so
+	$(CXX) -o $@ $^ $(CXXFLAGS)
 
 clean:
-	rm -f $(OBJ_DIR)/*.o $(LIB_DIR)/*.so mbrew
+	rm -rf $(OBJ_DIR) $(LIB_DIR)
+	rm -f mbrew
