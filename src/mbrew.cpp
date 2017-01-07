@@ -10,6 +10,25 @@
 #include <Brew.hpp>
 #include <Constants.hpp>
 
+void help(std::string prog)
+{
+   std::cout << prog << "\n\n"
+	     << "SYNOPSIS\n"
+	     << "        " << prog << " [OPTION]...\n\n"
+	     << "DESCRIPTION\n"
+	     << "        -r FILE, --recipe FILE\n"
+	     << "                input recipe file\n\n"
+	     << "        -f FILE, --fermentables FILE\n"
+	     << "                fermentables specfication file, "
+	     << "default is ferms.conf\n\n"
+	     << "        -y FILE, --yeast FILE\n"
+	     << "                yeast specfication file, "
+	     << "default is yeast.conf\n\n"
+	     << "        -b FILE, --brewery FILE\n"
+	     << "                brewery specfication file, "
+	     << "default is brewery.conf\n\n";
+}
+
 int main(int argc, char* argv[])
 {
    std::string inputRecipe;
@@ -19,20 +38,8 @@ int main(int argc, char* argv[])
    // Read user input
    for ( int i = 1; i < argc; i++ ) {
       if ( strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
-	 std::cout << "SYNOPSIS\n"
-		   << "        mbrew [OPTION]...\n\n"
-		   << "DESCRIPTION\n"
-		   << "        -r FILE, --recipe FILE\n"
-		   << "                input recipe file\n\n"
-		   << "        -f FILE, --fermentables FILE\n"
-		   << "                fermentables specfication file, "
-		   << "default is ferms.conf\n\n"
-		   << "        -y FILE, --yeast FILE\n"
-		   << "                yeast specfication file, "
-		   << "default is yeast.conf\n\n"
-		   << "        -b FILE, --brewery FILE\n"
-		   << "                brewery specfication file, "
-		   << "default is brewery.conf\n\n";
+	 help(argv[0]);
+	 exit(EXIT_SUCCESS);
       }
       else if ( strcmp(argv[i], "--recipe") == 0 ||
 		strcmp(argv[i], "-r") == 0 ) {
@@ -79,11 +86,23 @@ int main(int argc, char* argv[])
    brewery brewery;
    std::string note;
    ConfReader confReader;
-   confReader.readRecipe(inputRecipe, metadata, fermentables, hops, yeasts,
-   			 mashes, note);
-   confReader.readFermentables(fermentablesFileName, fermentables);
-   confReader.readYeasts(yeastFileName, yeasts);
-   confReader.readBrewery(breweryFileName, brewery);
+   if ( !confReader.readRecipe(inputRecipe, metadata, 
+			       fermentables, hops, yeasts, mashes, note) ) {
+      std::cerr << "ERROR: Could not open " << inputRecipe << '\n';
+      exit(EXIT_FAILURE);
+   }
+   if ( !confReader.readFermentables(fermentablesFileName, fermentables) ) {
+      std::cerr << "ERROR: Could not open " << fermentablesFileName << '\n';
+      exit(EXIT_FAILURE);
+   }
+   if ( !confReader.readYeasts(yeastFileName, yeasts) ) {
+      std::cerr << "ERROR: Could not open " << yeastFileName << '\n';
+      exit(EXIT_FAILURE);
+   }
+   if ( !confReader.readBrewery(breweryFileName, brewery) ) {
+      std::cerr << "ERROR: Could not open " << breweryFileName << '\n';
+      exit(EXIT_FAILURE);
+   }
    Brew brew(brewery, fermentables, mashes, hops, yeasts);
    brew.setNote(note);
    brew.setMetadata(metadata);
@@ -136,5 +155,5 @@ int main(int argc, char* argv[])
 	     << "Estimated FG: " << brew.getFGLow() << " to " 
 	     << brew.getFGHigh() << '\n'
 	     << "IBU: " << totalIBU << " \n";
-   return 0;
+   return EXIT_SUCCESS;
 }

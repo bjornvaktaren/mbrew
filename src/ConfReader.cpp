@@ -30,13 +30,11 @@ std::vector<std::string> ConfReader::splitConfString(std::string s)
    return strVector;
 }
 
-void ConfReader::readYeasts(std::string fileName,
+bool ConfReader::readYeasts(std::string fileName,
 			    std::vector<yeast> &yeasts)
 {
    std::ifstream confFile(fileName);
-   if ( !confFile.is_open() ) {
-      std::cerr << "ERROR: Could not open " << fileName << '\n';
-   }
+   if ( !confFile.is_open() ) return false;
    std::string line;
    std::vector<std::string> strings;
    // Read fermentables from file
@@ -58,15 +56,14 @@ void ConfReader::readYeasts(std::string fileName,
       }
    }
    confFile.close();
+   return true;
 }
 
-void ConfReader::readFermentables(std::string fileName,
+bool ConfReader::readFermentables(std::string fileName,
 				  std::vector<fermentable> &fermentables)
 {
    std::ifstream confFile(fileName);
-   if ( !confFile.is_open() ) {
-      std::cerr << "ERROR: Could not open " << fileName << '\n';
-   }
+   if ( !confFile.is_open() ) return false;
    std::string line;
    std::vector<std::string> strings;
    // Read fermentables from file
@@ -88,9 +85,10 @@ void ConfReader::readFermentables(std::string fileName,
       }
    }
    confFile.close();
+   return true;
 }
 				  
-void ConfReader::readRecipe(std::string fileName,
+bool ConfReader::readRecipe(std::string fileName,
 			    std::map<std::string,std::string> &metadata,
 			    std::vector<fermentable> &fermentables,
 			    std::vector<hop> &hops,
@@ -100,6 +98,7 @@ void ConfReader::readRecipe(std::string fileName,
 			    )
 {
    std::ifstream recipe(fileName);
+   if ( !recipe.is_open() ) return false;
    std::string line;
    std::vector<std::string> strings;
    // Read recipe from file
@@ -195,14 +194,13 @@ void ConfReader::readRecipe(std::string fileName,
       }
    }
    recipe.close();
+   return true;
 }
 
-void ConfReader::readBrewery(std::string fileName, brewery &b)
+bool ConfReader::readBrewery(std::string fileName, brewery &b)
 {
    std::ifstream confFile(fileName);
-   if ( !confFile.is_open() ) {
-      std::cerr << "ERROR: Could not open " << fileName << '\n';
-   }
+   if ( !confFile.is_open() ) return false;
    std::string line;
    std::vector<std::string> strings;
    // Read fermentables from file
@@ -244,4 +242,5 @@ void ConfReader::readBrewery(std::string fileName, brewery &b)
       }
    }
    confFile.close();
+   return true;
 }

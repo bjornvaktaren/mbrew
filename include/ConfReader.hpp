@@ -15,12 +15,11 @@ class ConfReader
 public:
    ConfReader(){};
    ~ConfReader(){};
-   std::vector<std::string> splitConfString(std::string s);
-   void readFermentables(std::string fileName,
+   bool readFermentables(std::string fileName,
 			 std::vector<fermentable> &fermentables);
-   void readYeasts(std::string fileName,
+   bool readYeasts(std::string fileName,
 		   std::vector<yeast> &yeasts);
-   void readRecipe(std::string fileName,
+   bool readRecipe(std::string fileName,
 		   std::map<std::string,std::string> &metadata,
 		   std::vector<fermentable> &fermentables,
 		   std::vector<hop> &hops,
@@ -28,9 +27,10 @@ public:
 		   std::vector<mash> &mashes,
 		   std::string &note
 		   );
-   void readBrewery(std::string fileName, brewery &b);
+   bool readBrewery(std::string fileName, brewery &b);
 private:
    std::string m_recipe;
+   std::vector<std::string> splitConfString(std::string s);
 };
 
 #endif
