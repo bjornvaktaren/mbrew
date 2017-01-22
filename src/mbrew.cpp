@@ -15,10 +15,9 @@ void help(std::string prog)
 {
    std::cout << prog << "\n\n"
 	     << "SYNOPSIS\n"
-	     << "        " << prog << " [OPTION]...\n\n"
+	     << "        " << prog << " RECIPE [OPTION]...\n"
+	     << "        where RECIPE is a recipe file\n\n"
 	     << "DESCRIPTION\n"
-	     << "        -r FILE, --recipe FILE\n"
-	     << "                input recipe file\n\n"
 	     << "        -f FILE, --fermentables FILE\n"
 	     << "                fermentables specfication file, "
 	     << "default is ferms.conf\n\n"
@@ -36,16 +35,22 @@ int main(int argc, char* argv[])
    std::string fermentablesFileName = "ferms.conf";
    std::string yeastFileName = "yeast.conf";
    std::string breweryFileName = "brewery.conf";
+
+   if ( argc < 2 ) {
+      std::cout << "Please supply a recipe file\n";
+      exit(EXIT_FAILURE);
+   }
+   else if ( strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
+      help(argv[0]);
+      exit(EXIT_SUCCESS);
+   }
+   else inputRecipe = std::string(argv[1]);
+
    // Read user input
-   for ( int i = 1; i < argc; i++ ) {
+   for ( int i = 2; i < argc; i++ ) {
       if ( strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
 	 help(argv[0]);
 	 exit(EXIT_SUCCESS);
-      }
-      else if ( strcmp(argv[i], "--recipe") == 0 ||
-		strcmp(argv[i], "-r") == 0 ) {
-	 inputRecipe = std::string(argv[i+1]);
-	 ++i;
       }
       else if ( strcmp(argv[i], "--fermentables") == 0 ||
 		strcmp(argv[i], "-f") == 0 ) {
