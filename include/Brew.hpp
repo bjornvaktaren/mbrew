@@ -5,6 +5,7 @@
 #include <map>
 #include <math.h>
 #include <iostream>
+#include <iomanip>
 
 // Local includes
 #include <Components.hpp>
@@ -47,6 +48,8 @@ public:
    double lovibondToSRM(double lovibond);
    double srmToLovibond(double srm);
    double getColorMoreyEBC();
+
+   void print();
 private:
    brewery m_brewery;
    std::vector<fermentable> m_fermentables;

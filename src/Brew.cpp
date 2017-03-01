@@ -177,3 +177,79 @@ double Brew::getColorMoreyEBC()
    mcu = mcu/(getPostboilVolume()/kConst::kGal2Litre);
    return 1.4922*pow(mcu,0.6859)/kConst::kEBC2SRM; // Morey's formula
 }
+
+void Brew::print()
+{
+   std::cout << "# Metadata\n";
+   unsigned int maxStringLength = 0;
+   for ( auto m : m_metadata ) {
+      if ( m.first.length() > maxStringLength ) {
+	 maxStringLength = m.first.length();
+      }
+   }
+   for ( auto m : m_metadata ) {
+      std::cout << std::setw(maxStringLength) << std::left
+		<< m.first << "   " << m.second << '\n';
+   }
+
+   std::cout << '\n';
+   std::cout << "# Fermentables\n";
+   maxStringLength = 0;
+   for ( auto f : m_fermentables ) {
+      if ( f.name.length() > maxStringLength ) {
+	 maxStringLength = f.name.length();
+      }
+   }
+   for ( auto f : m_fermentables ) {
+      std::cout << std::setw(maxStringLength) << std::left
+		<< f.name << "   " << f.weight << "   " << f.mash << "   "
+		<< f.color << "   " << f.extract << "   " 
+		<< std::setprecision(0) 
+		<< int(this->getOechle(f, this->getPostboilVolume())) << '\n';
+   }
+   std::cout << '\n';
+   std::cout << "# Hops\n";
+   for ( auto h : m_hops ) {
+      std::cout << h.name << "   " << h.alpha << "   " 
+		<< h.weight << "   " << h.time << "   "
+		<< this->getIBU(h) 
+		<< '\n';
+   }
+   std::cout << '\n';
+   std::cout << "# Yeast\n";
+   for ( auto y : m_yeasts ) {
+      std::cout << y.name << "   " << y.temperature << "   " 
+		<< y.time << '\n';
+   }
+   std::cout << '\n';
+   std::cout << "# Mash\n";
+   for ( auto m : m_mashes ) {
+      std::cout << m.name << "   " << m.volume << "   " 
+		<< m.temperature << "   " << m.time << '\n';
+   }
+   std::cout << "\n# Note\n" << m_recipeNote
+	     << '\n'
+	     << "# Brewery\n"
+	     << m_brewery.name << "   " << m_brewery.efficiency << "   " 
+	     << m_brewery.waterLostToMalt << "   " << m_brewery.mashDeadSpace 
+	     << '\n'
+
+	     << "\n# Estimations\n" << std::setiosflags(std::ios::fixed) 
+	     << std::setprecision(0) 
+	     << "Color:               " << this->getColorMoreyEBC() << " EBC\n"
+	     << std::setprecision(1)
+	     << "Preboil Volume:      " << this->getPreboilVolume() 
+	     << " liter\n"
+	     << "Postboil Volume:     " << this->getPostboilVolume() 
+	     << " liter\n"
+	     << "Fermenter Volume:    " << this->getVolumeIntoFermenter() 
+	     << " liter\n"
+	     << std::setprecision(3)
+	     << "Preboil Gravity:     " << this->getPreboilSG() << " \n"
+	     << "Postboil Gravity:    " << this->getPostboilSG() << " \n"
+	     << "Postferment Gravity: " << this->getFGLow() << " to " 
+	     << this->getFGHigh() << '\n'
+	     << std::setprecision(0)
+	     << "Bitterness:          " << this->getTotalIBU() << " IBU\n";
+
+}

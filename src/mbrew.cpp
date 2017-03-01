@@ -32,9 +32,9 @@ void help(std::string prog)
 int main(int argc, char* argv[])
 {
    std::string inputRecipe;
-   std::string fermentablesFileName = "ferms.conf";
-   std::string yeastFileName = "yeast.conf";
-   std::string breweryFileName = "brewery.conf";
+   std::string fermentablesFileName;
+   std::string yeastFileName;
+   std::string breweryFileName;
 
    if ( argc < 2 ) {
       std::cout << "Please supply a recipe file\n";
@@ -76,13 +76,20 @@ int main(int argc, char* argv[])
       std::cout << "Please specify an input recipe.\n";
       exit(EXIT_FAILURE);
    }
-   if ( fermentablesFileName.compare("ferms.conf") == 0 ) {
+   if ( fermentablesFileName.empty() ) {
+      fermentablesFileName = "ferms.conf";
       std::cout << "WARNING: fermentables configuration file not specified. "
 		<< "Using default " << fermentablesFileName << '\n';
    }
-   if ( breweryFileName.compare("brewery.conf") == 0 ) {
+   if ( breweryFileName.empty() ) {
+      breweryFileName = "brewery.conf";
       std::cout << "WARNING: brewery configuration file not specified. "
 		<< "Using default " << breweryFileName << '\n';
+   }
+   if ( yeastFileName.empty() ) {
+      yeastFileName = "yeast.conf";
+      std::cout << "WARNING: yeast configuration file not specified. "
+		<< "Using default " << yeastFileName << '\n';
    }
    std::map<std::string,std::string> metadata;
    std::vector<fermentable> fermentables;
@@ -112,59 +119,7 @@ int main(int argc, char* argv[])
    Brew brew(brewery, fermentables, mashes, hops, yeasts);
    brew.setNote(note);
    brew.setMetadata(metadata);
-   std::cout << "# Metadata\n";
-   for ( auto m : metadata ) {
-      std::cout << m.first << "   " << m.second << '\n';
-   }
-   std::cout << '\n';
-   std::cout << "# Fermentables\n";
-   for ( auto f : fermentables ) {
-      std::cout << f.name << "   " << f.weight << "   " << f.mash << "   "
-		<< f.color << "   " << f.extract << "   " 
-		<< brew.getOechle(f, 10.0) << '\n';
-   }
-   std::cout << '\n';
-   std::cout << "# Hops\n";
-   for ( auto h : hops ) {
-      std::cout << h.name << "   " << h.alpha << "   " 
-		<< h.weight << "   " << h.time << "   "
-		<< brew.getIBU(h) 
-		<< '\n';
-   }
-   std::cout << '\n';
-   std::cout << "# Yeast\n";
-   for ( auto y : yeasts ) {
-      std::cout << y.name << "   " << y.temperature << "   " 
-		<< y.time << '\n';
-   }
-   std::cout << '\n';
-   std::cout << "# Mash\n";
-   for ( auto m : mashes ) {
-      std::cout << m.name << "   " << m.volume << "   " 
-		<< m.temperature << "   " << m.time << '\n';
-   }
-   std::cout << "\n# Note\n" << note
-	     << '\n'
-	     << "# Brewery\n"
-	     << brewery.name << "   " << brewery.efficiency << "   " 
-	     << brewery.waterLostToMalt << "   " << brewery.mashDeadSpace 
-	     << '\n'
+   brew.print();
 
-	     << "\n# Estimations\n" << std::setiosflags(std::ios::fixed) 
-	     << std::setprecision(0) 
-	     << "Color:               " << brew.getColorMoreyEBC() << " EBC\n"
-	     << std::setprecision(1)
-	     << "Preboil Volume:      " << brew.getPreboilVolume() << " liter\n"
-	     << "Postboil Volume:     " << brew.getPostboilVolume() 
-	     << " liter\n"
-	     << "Fermenter Volume:    " << brew.getVolumeIntoFermenter() 
-	     << " liter\n"
-	     << std::setprecision(3)
-	     << "Preboil Gravity:     " << brew.getPreboilSG() << " \n"
-	     << "Postboil Gravity:    " << brew.getPostboilSG() << " \n"
-	     << "Postferment Gravity: " << brew.getFGLow() << " to " 
-	     << brew.getFGHigh() << '\n'
-	     << std::setprecision(0)
-	     << "Bitterness:          " << brew.getTotalIBU() << " IBU\n";
    return EXIT_SUCCESS;
 }
