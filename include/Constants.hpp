@@ -5,6 +5,8 @@ namespace kConst{
    double kkg2lbs = 2.20462262;
    double kGal2Litre = 3.78541178;
    double kEBC2SRM = 0.508;
+   double kWaterSpecificHeat = 4186.798188;
+   double kGrainSpecificHeat = 1590.983311;
 }
 
 #endif

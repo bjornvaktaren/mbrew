@@ -29,6 +29,8 @@ public:
    void setNote(std::string note) { m_recipeNote = note; }
    void setMetadata(std::map<std::string,std::string> m) { m_metadata = m; }
 
+   double getStrikeWaterTemperature(mash m);
+   
    double getPreboilVolume();
    double getPostboilVolume();
    double getVolumeIntoFermenter();

@@ -26,6 +26,22 @@ Brew::Brew(brewery brewery,
 
 }
 
+double Brew::getStrikeWaterTemperature(mash mash)
+{
+   // Specific heat of grain: 0.38 Btu/(lb*F)
+   // Specific heat of water: 1.00 Btu/(lb*F)
+   double eWater = mash.volume*kConst::kWaterSpecificHeat*mash.temperature;
+   double massFermentables = 0.0;
+   for ( auto f : m_fermentables ) massFermentables += f.weight;
+   double eGrain = massFermentables*kConst::kGrainSpecificHeat*20;
+   double eMashTun = 0.0;//mass*Cp*T;
+   double eTotal = eWater + eGrain + eMashTun;
+   double mTotal = massFermentables + mash.volume;
+   double cTotal = (kConst::kWaterSpecificHeat*mash.volume
+		    + kConst::kGrainSpecificHeat*massFermentables)/mTotal;
+   return eTotal/(cTotal*mTotal);
+}
+
 double Brew::getPreboilVolume()
 {
    double volume = 0.0;
@@ -225,7 +241,8 @@ void Brew::print()
    std::cout << "# Mash\n";
    for ( auto m : m_mashes ) {
       std::cout << m.name << "   " << m.volume << "   " 
-		<< m.temperature << "   " << m.time << '\n';
+		<< m.temperature << "   " << m.time << "   "
+		<< this->getStrikeWaterTemperature(m) << '\n';
    }
    std::cout << "\n# Note\n" << m_recipeNote
 	     << '\n'
