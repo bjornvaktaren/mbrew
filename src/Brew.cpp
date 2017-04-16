@@ -28,11 +28,14 @@ Brew::Brew(brewery brewery,
 
 double Brew::getStrikeWaterTemperature(mash mash)
 {
-   // m_w*c_w*t_w + m_g*c_g*t_g = (c_w*m_w + c_g*m_g)*t_m
-   // t_w = ((c_w*m_w + c_g*m_g)*t_m - m_g*c_g*t_g)/(m_w*c_w)
+   // Calculate strike water temperature using specific heat capacity, mass,
+   // and temperature. Assuming speficic heat capacity of the resulting mash is
+   // the mass-average of the constituences (grain, tun, and water).
    double massFermentables = 0.0;
-   for ( auto f : m_fermentables ) massFermentables += f.weight/1e3;
-   double eGrain = massFermentables*kConst::kGrainSpecificHeat*20.0;
+   for ( auto f : m_fermentables ) massFermentables += f.weight/1e3; // to kg
+   double eGrain   = ( massFermentables
+		       * kConst::kGrainSpecificHeat
+		       * m_brewery.grainMashInTemperature );
    double eMashTun = ( m_brewery.mashTunMass
 		       * m_brewery.mashTunSpecificHeatCapacity
 		       * m_brewery.mashTunTemperature );
