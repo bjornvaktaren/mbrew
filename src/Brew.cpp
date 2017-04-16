@@ -28,16 +28,17 @@ Brew::Brew(brewery brewery,
 
 double Brew::getStrikeWaterTemperature(mash mash)
 {
-   // Specific heat of grain: 0.38 Btu/(lb*F)
-   // Specific heat of water: 1.00 Btu/(lb*F)
    // m_w*c_w*t_w + m_g*c_g*t_g = (c_w*m_w + c_g*m_g)*t_m
    // t_w = ((c_w*m_w + c_g*m_g)*t_m - m_g*c_g*t_g)/(m_w*c_w)
    double massFermentables = 0.0;
    for ( auto f : m_fermentables ) massFermentables += f.weight/1e3;
    double eGrain = massFermentables*kConst::kGrainSpecificHeat*20.0;
-   double eMashTun = 0.0;//mass*Cp*T;
+   double eMashTun = ( m_brewery.mashTunMass
+		       * m_brewery.mashTunSpecificHeatCapacity
+		       * m_brewery.mashTunTemperature );
    return ( ( ( kConst::kWaterSpecificHeat*mash.volume
-		+ kConst::kGrainSpecificHeat*massFermentables )
+		+ kConst::kGrainSpecificHeat*massFermentables
+		+ m_brewery.mashTunSpecificHeatCapacity*m_brewery.mashTunMass )
 	      * mash.temperature - eGrain - eMashTun )
 	    / (mash.volume*kConst::kWaterSpecificHeat));
 }

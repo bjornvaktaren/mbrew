@@ -46,9 +46,11 @@ struct brewery
    double kettleDeadSpace = 0.0;
    double waterLostToMalt = 1.085; // liter/kg
    double waterLostToHops = 0.00835; // liter/gram
-   double mashTunMass = 0.0;
    double hopsUtilization = 1.0;
-   std::string mashTunMaterial;
+   double mashTunSpecificHeatCapacity = 510.0; // J/(kg*K), stainless steel
+   double mashTunTemperature = 20.0; // C,  mash tun starting temperature
+   double mashTunMass = 0.0; // kg, mash tun mass
+   double grainMashInTemperature = 20.0; // C, mash tun starting temperature
 };
 
 #endif

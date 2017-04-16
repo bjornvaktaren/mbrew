@@ -1,7 +1,7 @@
 OBJ_DIR=obj
 SRC_DIR=src
 LIB_DIR=lib
-CXXFLAGS=-g -O0 -fPIC -std=c++11 -Iinclude -Wunused-variable -Wall -Wpedantic
+CXXFLAGS=-g -fPIC -std=c++11 -Iinclude -Wunused-variable -Wall -Wpedantic
 CXX=g++
 
 OBJS=ConfReader.o Brew.o

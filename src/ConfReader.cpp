@@ -234,11 +234,20 @@ bool ConfReader::readBrewery(std::string fileName, brewery &b)
 	    else if ( strings.at(0).compare("MashTunMass") == 0 ) {
 	       b.mashTunMass = stod(strings.at(1));
 	    }
-	    else if ( strings.at(0).compare("MashTunMaterial") == 0 ) {
-	       b.mashTunMaterial = strings.at(1);
+	    else if ( strings.at(0).compare("MashTunSpecificHeatCapacity")
+		      == 0 ) {
+	       b.mashTunSpecificHeatCapacity = stod(strings.at(1));
 	    }
 	    else if ( strings.at(0).compare("HopsUtilization") == 0 ) {
 	       b.hopsUtilization = stod(strings.at(1));
+	    }
+	    else if ( strings.at(0).compare("MashTunTemperature")
+		      == 0 ) {
+	       b.mashTunTemperature = stod(strings.at(1));
+	    }
+	    else if ( strings.at(0).compare("GrainMashInTemperature")
+		      == 0 ) {
+	       b.grainMashInTemperature = stod(strings.at(1));
 	    }
       	 }
 	 break;
