@@ -198,6 +198,7 @@ double Brew::getColorMoreyEBC()
    return 1.4922*pow(mcu,0.6859)/kConst::kEBC2SRM; // Morey's formula
 }
 
+
 void Brew::print()
 {
    std::cout << "# Metadata\n";
@@ -214,45 +215,36 @@ void Brew::print()
 
    std::cout << '\n';
    std::cout << "# Fermentables\n";
-   maxStringLength = 0;
    for ( auto f : m_fermentables ) {
-      if ( f.name.length() > maxStringLength ) {
-	 maxStringLength = f.name.length();
-      }
-   }
-   for ( auto f : m_fermentables ) {
-      std::cout << std::setw(maxStringLength) << std::left
-		<< f.name << "   " << f.weight << "   " << f.mash << "   "
-		<< f.color << "   " << f.extract << "   " 
-		<< std::setprecision(0) 
+      std::cout << std::setw(30) << std::left
+		<< f.name << std::setw(7)<< f.weight << std::setw(7)
+		<< f.mash << std::setw(7) << f.color << std::setw(7)
+		<< f.extract << std::setw(7) << std::setprecision(0) 
 		<< int(this->getOechle(f, this->getPostboilVolume())) << '\n';
    }
    std::cout << '\n';
    std::cout << "# Hops\n";
    for ( auto h : m_hops ) {
       std::cout << std::setw(30) << h.name << "   "
-		<< std::fixed << std::setw(5) << std::setprecision(1)	 
-		<< h.alpha << "   " 
-		<< h.weight << "   "
-		<< h.time << "   "
-		<< this->getIBU(h) 
-		<< '\n';
+		<< std::fixed << std::setw(7) << std::setprecision(1)	 
+		<< h.alpha << std::setw(7) << h.weight << std::setw(7)
+		<< h.time << std::setw(7) << this->getIBU(h) << '\n';
    }
    std::cout << '\n';
    std::cout << "# Yeast\n";
    for ( auto y : m_yeasts ) {
       std::cout << std::setw(30) << y.name << "   "
-		<< std::fixed << std::setw(5) << std::setprecision(1)
-		<< y.temperature << "   "  << y.time << '\n';
+		<< std::fixed << std::setw(7) << std::setprecision(1)
+		<< y.temperature << std::setw(7) << y.time << '\n';
    }
    std::cout << '\n';
    std::cout << "# Mash\n";
    for ( auto m : m_mashes ) {
       std::cout << std::setw(30) << m.name << "   "
-		<< std::fixed << std::setw(5) << std::setprecision(1)
-		<< m.volume << "   " 
-		<< m.temperature << "   " << m.time << "   "
-		<< this->getStrikeWaterTemperature(m) << '\n';
+		<< std::fixed << std::setw(7) << std::setprecision(1)
+		<< m.volume << std::setw(7) << m.temperature << std::setw(7)
+		<< m.time << std::setw(7) << this->getStrikeWaterTemperature(m)
+		<< '\n';
    }
    std::cout << "\n# Note\n" << m_recipeNote
 	     << '\n'
