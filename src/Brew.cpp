@@ -30,16 +30,16 @@ double Brew::getStrikeWaterTemperature(mash mash)
 {
    // Specific heat of grain: 0.38 Btu/(lb*F)
    // Specific heat of water: 1.00 Btu/(lb*F)
-   double eWater = mash.volume*kConst::kWaterSpecificHeat*mash.temperature;
+   // m_w*c_w*t_w + m_g*c_g*t_g = (c_w*m_w + c_g*m_g)*t_m
+   // t_w = ((c_w*m_w + c_g*m_g)*t_m - m_g*c_g*t_g)/(m_w*c_w)
    double massFermentables = 0.0;
-   for ( auto f : m_fermentables ) massFermentables += f.weight;
-   double eGrain = massFermentables*kConst::kGrainSpecificHeat*20;
+   for ( auto f : m_fermentables ) massFermentables += f.weight/1e3;
+   double eGrain = massFermentables*kConst::kGrainSpecificHeat*20.0;
    double eMashTun = 0.0;//mass*Cp*T;
-   double eTotal = eWater + eGrain + eMashTun;
-   double mTotal = massFermentables + mash.volume;
-   double cTotal = (kConst::kWaterSpecificHeat*mash.volume
-		    + kConst::kGrainSpecificHeat*massFermentables)/mTotal;
-   return eTotal/(cTotal*mTotal);
+   return ( ( ( kConst::kWaterSpecificHeat*mash.volume
+		+ kConst::kGrainSpecificHeat*massFermentables )
+	      * mash.temperature - eGrain - eMashTun )
+	    / (mash.volume*kConst::kWaterSpecificHeat));
 }
 
 double Brew::getPreboilVolume()
@@ -226,21 +226,27 @@ void Brew::print()
    std::cout << '\n';
    std::cout << "# Hops\n";
    for ( auto h : m_hops ) {
-      std::cout << h.name << "   " << h.alpha << "   " 
-		<< h.weight << "   " << h.time << "   "
+      std::cout << std::setw(30) << h.name << "   "
+		<< std::fixed << std::setw(5) << std::setprecision(1)	 
+		<< h.alpha << "   " 
+		<< h.weight << "   "
+		<< h.time << "   "
 		<< this->getIBU(h) 
 		<< '\n';
    }
    std::cout << '\n';
    std::cout << "# Yeast\n";
    for ( auto y : m_yeasts ) {
-      std::cout << y.name << "   " << y.temperature << "   " 
-		<< y.time << '\n';
+      std::cout << std::setw(30) << y.name << "   "
+		<< std::fixed << std::setw(5) << std::setprecision(1)
+		<< y.temperature << "   "  << y.time << '\n';
    }
    std::cout << '\n';
    std::cout << "# Mash\n";
    for ( auto m : m_mashes ) {
-      std::cout << m.name << "   " << m.volume << "   " 
+      std::cout << std::setw(30) << m.name << "   "
+		<< std::fixed << std::setw(5) << std::setprecision(1)
+		<< m.volume << "   " 
 		<< m.temperature << "   " << m.time << "   "
 		<< this->getStrikeWaterTemperature(m) << '\n';
    }
