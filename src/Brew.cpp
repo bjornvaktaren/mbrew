@@ -9,7 +9,7 @@ Brew::Brew(brewery brewery,
    m_mashes(mashes), 
    m_hops(hops)
 {
-
+   this->calculateStrikeWaterTemperatures();
 }
 
 Brew::Brew(brewery brewery,
@@ -23,7 +23,37 @@ Brew::Brew(brewery brewery,
    m_hops(hops), 
    m_yeasts(yeasts)
 {
+   this->calculateStrikeWaterTemperatures();
+}
 
+void Brew::calculateStrikeWaterTemperatures()
+{
+   m_mashes.at(0).mashInTemperature = getStrikeWaterTemperature(m_mashes.at(0));
+   for ( unsigned int i = 1; i < m_mashes.size(); ++i ) {
+      m_mashes.at(i).mashInTemperature
+	 = getStrikeWaterTemperature(m_mashes.at(i),
+				     m_mashes.at(i-1).mashInTemperature);
+   }
+}
+
+double Brew::getStrikeWaterTemperature(mash mash, double fromTemperature)
+{
+   // Calculate strike water temperature using specific heat capacity, mass,
+   // and temperature. Assuming speficic heat capacity of the resulting mash is
+   // the mass-average of the constituences (grain, tun, and water).
+   double massFermentables = 0.0;
+   for ( auto f : m_fermentables ) massFermentables += f.weight/1e3; // to kg
+   double eGrain   = ( massFermentables
+		       * kConst::kGrainSpecificHeat
+		       * fromTemperature );
+   double eMashTun = ( m_brewery.mashTunMass
+		       * m_brewery.mashTunSpecificHeatCapacity
+		       * fromTemperature );
+   return ( ( ( kConst::kWaterSpecificHeat*mash.volume
+		+ kConst::kGrainSpecificHeat*massFermentables
+		+ m_brewery.mashTunSpecificHeatCapacity*m_brewery.mashTunMass )
+	      * mash.temperature - eGrain - eMashTun )
+	    / (mash.volume*kConst::kWaterSpecificHeat));
 }
 
 double Brew::getStrikeWaterTemperature(mash mash)

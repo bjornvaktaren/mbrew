@@ -30,6 +30,7 @@ public:
    void setMetadata(std::map<std::string,std::string> m) { m_metadata = m; }
 
    double getStrikeWaterTemperature(mash m);
+   double getStrikeWaterTemperature(mash mash, double temp);
    
    double getPreboilVolume();
    double getPostboilVolume();
@@ -53,6 +54,7 @@ public:
 
    void print();
 private:
+   // class members
    brewery m_brewery;
    std::vector<fermentable> m_fermentables;
    std::vector<mash> m_mashes;
@@ -60,6 +62,9 @@ private:
    std::vector<yeast> m_yeasts;
    std::string m_recipeNote;
    std::map<std::string,std::string> m_metadata;
+
+   // private function
+   void calculateStrikeWaterTemperatures();
 };
 
 #endif

@@ -25,7 +25,8 @@ struct mash
    std::string name;
    double volume = 0.0;
    double temperature = 0.0;
-   double time = 0.0;   
+   double time = 0.0;
+   double mashInTemperature = 0.0;
 };
 
 struct yeast
