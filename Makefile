@@ -1,10 +1,12 @@
 OBJ_DIR=obj
 SRC_DIR=src
 LIB_DIR=lib
+INC_DIR=include
 CXXFLAGS=-g -fPIC -std=c++11 -Iinclude -Wunused-variable -Wall -Wpedantic
 CXX=g++
 
 OBJS=ConfReader.o Brew.o
+DEPS=$(addprefix $(INC_DIR)/,Components.hpp Constants.hpp)
 
 all: mbrew
 
@@ -13,10 +15,10 @@ $(LIB_DIR):
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INC_DIR)/%.hpp $(DEPS) | $(OBJ_DIR)
 	$(CXX) -c -o $@ $< $(CXXFLAGS) 
 
-$(LIB_DIR)/libmbrew.so: $(addprefix $(OBJ_DIR)/,$(OBJS))  | $(LIB_DIR)
+$(LIB_DIR)/libmbrew.so: $(addprefix $(OBJ_DIR)/,$(OBJS)) $(DEPS) | $(LIB_DIR)
 	$(CXX) -shared $^ -o $@
 
 mbrew: $(SRC_DIR)/mbrew.cpp $(LIB_DIR)/libmbrew.so
