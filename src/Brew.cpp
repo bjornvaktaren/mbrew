@@ -243,36 +243,43 @@ void Brew::print()
 		<< m.first << "   " << m.second << '\n';
    }
 
-   std::cout << '\n';
-   std::cout << "# Fermentables\n";
+   std::cout << '\n'
+	     << std::setw(30) << std::left << "# Fermentables"
+	     << std::setw(12) << "Weight (g)" << std::setw(7) << "Added"
+      	     << std::setw(13) << "Color (EBC)" << std::setw(11) << "Potential"
+	     << "OG\n";
    for ( auto f : m_fermentables ) {
       std::cout << std::setw(30) << std::left
-		<< f.name << std::setw(7)<< f.weight << std::setw(7)
-		<< f.mash << std::setw(7) << f.color << std::setw(7)
+		<< f.name << std::setw(12)<< f.weight << std::setw(7)
+		<< (f.mash ? "Mash" : "Boil") << std::setw(13)
+		<< f.color << std::setw(11)
 		<< f.extract << std::setw(7) << std::setprecision(0) 
 		<< int(this->getOechle(f, this->getPostboilVolume())) << '\n';
    }
-   std::cout << '\n';
-   std::cout << "# Hops\n";
+   std::cout << '\n'
+	     << "# Hops                           Alpha (%)  Weight (g)  "
+	     << "Time (min)  IBU\n";
    for ( auto h : m_hops ) {
-      std::cout << std::setw(30) << h.name << "   "
-		<< std::fixed << std::setw(7) << std::setprecision(1)	 
-		<< h.alpha << std::setw(7) << h.weight << std::setw(7)
+      std::cout << std::setw(30) << h.name << "   " << std::left
+		<< std::fixed << std::setw(11) << std::setprecision(1)	 
+		<< h.alpha << std::setw(12) << h.weight << std::setw(12)
 		<< h.time << std::setw(7) << this->getIBU(h) << '\n';
    }
-   std::cout << '\n';
-   std::cout << "# Yeast\n";
+   std::cout << '\n'
+	     << "# Yeast                          Temperature (C)  Time (days)"
+	     << '\n';
    for ( auto y : m_yeasts ) {
       std::cout << std::setw(30) << y.name << "   "
-		<< std::fixed << std::setw(7) << std::setprecision(1)
+		<< std::fixed << std::setw(17) << std::setprecision(1)
 		<< y.temperature << std::setw(7) << y.time << '\n';
    }
-   std::cout << '\n';
-   std::cout << "# Mash\n";
+   std::cout << '\n'
+	     << "# Mash                           Vol. (l)  Temp (C)  Time (min)"
+	     << "  Strike temp (C)\n";
    for ( auto m : m_mashes ) {
       std::cout << std::setw(30) << m.name << "   "
-		<< std::fixed << std::setw(7) << std::setprecision(1)
-		<< m.volume << std::setw(7) << m.temperature << std::setw(7)
+		<< std::fixed << std::setw(10) << std::setprecision(1)
+		<< m.volume << std::setw(10) << m.temperature << std::setw(12)
 		<< m.time << std::setw(7) << this->getStrikeWaterTemperature(m)
 		<< '\n';
    }
