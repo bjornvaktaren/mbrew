@@ -18,6 +18,8 @@ void help(std::string prog)
 	     << "        " << prog << " RECIPE [OPTION]...\n"
 	     << "        where RECIPE is a recipe file\n\n"
 	     << "DESCRIPTION\n"
+	     << "        -v, --verbose\n"
+	     << "                verbose mode"
 	     << "        -f FILE, --fermentables FILE\n"
 	     << "                fermentables specfication file, "
 	     << "default is ferms.conf\n\n"
@@ -35,7 +37,8 @@ int main(int argc, char* argv[])
    std::string fermentablesFileName;
    std::string yeastFileName;
    std::string breweryFileName;
-
+   bool verbose = false;
+   
    if ( argc < 2 ) {
       std::cout << "Please supply a recipe file\n";
       exit(EXIT_FAILURE);
@@ -67,6 +70,10 @@ int main(int argc, char* argv[])
 	 breweryFileName = std::string(argv[i+1]);
 	 ++i;
       }
+      else if ( strcmp(argv[i], "--verbose") == 0 ||
+		strcmp(argv[i], "-v") == 0 ) {
+	 verbose = true;
+      }
       else {
 	 std::cout << "Unrecognized option: " << argv[i] << '\n';
 	 exit(EXIT_FAILURE);
@@ -78,18 +85,24 @@ int main(int argc, char* argv[])
    }
    if ( fermentablesFileName.empty() ) {
       fermentablesFileName = "ferms.conf";
-      std::cout << "WARNING: fermentables configuration file not specified. "
-		<< "Using default " << fermentablesFileName << '\n';
+      if ( verbose ) {
+	 std::cout << "WARNING: fermentables configuration file not specified. "
+		   << "Using default " << fermentablesFileName << '\n';
+      }
    }
    if ( breweryFileName.empty() ) {
       breweryFileName = "brewery.conf";
-      std::cout << "WARNING: brewery configuration file not specified. "
-		<< "Using default " << breweryFileName << '\n';
+      if ( verbose ) {
+	 std::cout << "WARNING: brewery configuration file not specified. "
+		   << "Using default " << breweryFileName << '\n';
+      }
    }
    if ( yeastFileName.empty() ) {
       yeastFileName = "yeast.conf";
-      std::cout << "WARNING: yeast configuration file not specified. "
-		<< "Using default " << yeastFileName << '\n';
+      if ( verbose ) {
+	 std::cout << "WARNING: yeast configuration file not specified. "
+		   << "Using default " << yeastFileName << '\n';
+      }
    }
    std::map<std::string,std::string> metadata;
    std::vector<fermentable> fermentables;
