@@ -57,16 +57,28 @@ int main(int argc, char* argv[])
       }
       else if ( strcmp(argv[i], "--fermentables") == 0 ||
 		strcmp(argv[i], "-f") == 0 ) {
+         if ( argc == i+1 ) {
+            std::cerr << "ERROR: " << argv[i] << " takes exactly 1 argument\n";
+            exit(EXIT_FAILURE);
+         }
 	 fermentablesFileName = std::string(argv[i+1]);
 	 ++i;
       }
       else if ( strcmp(argv[i], "--yeast") == 0 ||
 		strcmp(argv[i], "-y") == 0 ) {
+         if ( argc == i+1 ) {
+            std::cerr << "ERROR: " << argv[i] << " takes exactly 1 argument\n";
+            exit(EXIT_FAILURE);
+         }
 	 yeastFileName = std::string(argv[i+1]);
 	 ++i;
       }
       else if ( strcmp(argv[i], "--brewery") == 0 ||
 		strcmp(argv[i], "-b") == 0 ) {
+         if ( argc == i+1 ) {
+            std::cerr << "ERROR: " << argv[i] << " takes exactly 1 argument\n";
+            exit(EXIT_FAILURE);
+         }
 	 breweryFileName = std::string(argv[i+1]);
 	 ++i;
       }
