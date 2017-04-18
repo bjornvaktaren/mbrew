@@ -19,7 +19,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INC_DIR)/%.hpp $(DEPS) | $(OBJ_DIR)
 	$(CXX) -c -o $@ $< $(CXXFLAGS) 
 
 $(LIB_DIR)/libmbrew.so: $(addprefix $(OBJ_DIR)/,$(OBJS)) $(DEPS) | $(LIB_DIR)
-	$(CXX) -shared $^ -o $@
+	$(CXX) -shared $^ -o $@ $(CXXFLAGS)
 
 mbrew: $(SRC_DIR)/mbrew.cpp $(LIB_DIR)/libmbrew.so
 	$(CXX) -o $@ $^ $(CXXFLAGS)
