@@ -2,11 +2,11 @@
 #define CONSTANTS_H
 
 namespace kConst{
-   double kkg2lbs = 2.20462262;
-   double kGal2Litre = 3.78541178;
-   double kEBC2SRM = 0.508;
-   double kWaterSpecificHeat = 4186.798188;
-   double kGrainSpecificHeat = 1590.983311;
+   extern const double kkg2lbs;
+   extern const double kGal2Litre;
+   extern const double kEBC2SRM;
+   extern const double kWaterSpecificHeat;
+   extern const double kGrainSpecificHeat;
 }
 
 #endif

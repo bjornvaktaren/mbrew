@@ -48,9 +48,16 @@ public:
    double getFGHigh();
    double getFGLow();
 
+   std::string getMetadata(std::string key) { return m_metadata[key]; };
+
    double lovibondToSRM(double lovibond);
    double srmToLovibond(double srm);
    double getColorMoreyEBC();
+
+   std::vector<fermentable> getFermentables() { return m_fermentables; };
+   std::vector<mash> getMashes() { return m_mashes; };
+   std::vector<hop> getHops() { return m_hops; };
+   std::vector<yeast> getYeasts() { return m_yeasts; };
 
    void print();
 private:

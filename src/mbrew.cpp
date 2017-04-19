@@ -6,10 +6,11 @@
 #include <string.h>
 
 // Local includes
-#include <Components.hpp>
+// #include <Components.hpp>
 #include <ConfReader.hpp>
 #include <Brew.hpp>
-#include <Constants.hpp>
+#include <LaTeXExporter.hpp>
+// #include <Constants.hpp>
 
 void help(std::string prog)
 {
@@ -20,6 +21,8 @@ void help(std::string prog)
 	     << "DESCRIPTION\n"
 	     << "        -v, --verbose\n"
 	     << "                verbose mode"
+	     << "        -l FILE, --latex FILE\n"
+	     << "                export LaTeX file"
 	     << "        -f FILE, --fermentables FILE\n"
 	     << "                fermentables specfication file, "
 	     << "default is ferms.conf\n\n"
@@ -37,6 +40,7 @@ int main(int argc, char* argv[])
    std::string fermentablesFileName;
    std::string yeastFileName;
    std::string breweryFileName;
+   std::string latexFile;
    bool verbose = false;
    
    if ( argc < 2 ) {
@@ -62,6 +66,15 @@ int main(int argc, char* argv[])
             exit(EXIT_FAILURE);
          }
 	 fermentablesFileName = std::string(argv[i+1]);
+	 ++i;
+      }
+      else if ( strcmp(argv[i], "--latex") == 0 ||
+		strcmp(argv[i], "-l") == 0 ) {
+         if ( argc == i+1 ) {
+            std::cerr << "ERROR: " << argv[i] << " takes exactly 1 argument\n";
+            exit(EXIT_FAILURE);
+         }
+	 latexFile = std::string(argv[i+1]);
 	 ++i;
       }
       else if ( strcmp(argv[i], "--yeast") == 0 ||
@@ -145,6 +158,11 @@ int main(int argc, char* argv[])
    brew.setNote(note);
    brew.setMetadata(metadata);
    brew.print();
+
+   if ( ! latexFile.empty() ) {
+      LaTeXExporter exporter(&brew);
+      exporter.save(latexFile);
+   }
 
    return EXIT_SUCCESS;
 }
