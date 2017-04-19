@@ -244,16 +244,18 @@ void Brew::print()
    }
 
    std::cout << '\n'
-	     << std::setw(30) << std::left << "# Fermentables"
+	     << std::setw(33) << std::left << "# Fermentables"
 	     << std::setw(12) << "Weight (g)" << std::setw(7) << "Added"
       	     << std::setw(13) << "Color (EBC)" << std::setw(11) << "Potential"
 	     << "OG\n";
    for ( auto f : m_fermentables ) {
-      std::cout << std::setw(30) << std::left
-		<< f.name << std::setw(12)<< f.weight << std::setw(7)
-		<< (f.mash ? "Mash" : "Boil") << std::setw(13)
-		<< f.color << std::setw(11)
-		<< f.extract << std::setw(7) << std::setprecision(0) 
+      std::cout << std::setw(33) << std::left
+		<< f.name << std::fixed << std::setw(12) << std::setprecision(0)
+		<< f.weight << std::fixed << std::setw(7)
+		<< (f.mash ? "Mash" : "Boil") << std::fixed << std::setw(13)
+		<< f.color << std::fixed << std::setw(11)
+		<< f.extract << std::fixed << std::setw(7) 
+		<< std::setprecision(0) 
 		<< int(this->getOechle(f, this->getPostboilVolume())) << '\n';
    }
    std::cout << '\n'
