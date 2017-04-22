@@ -28,6 +28,7 @@ public:
 
    void setNote(std::string note) { m_recipeNote = note; }
    void setMetadata(std::map<std::string,std::string> m) { m_metadata = m; }
+   void setObservations(BrewSpecifications o) { m_observations = o; }
 
    double getStrikeWaterTemperature(mash m);
    double getStrikeWaterTemperature(mash mash, double temp);
@@ -59,6 +60,16 @@ public:
    std::vector<hop> getHops() { return m_hops; };
    std::vector<yeast> getYeasts() { return m_yeasts; };
    std::string getNote() { return m_recipeNote; };
+   BrewSpecifications getObservations() { return m_observations; };
+
+   double getObservedOG() { return m_observations.OG; };
+   double getObservedFG() { return m_observations.FG; };
+   double getObservedPreboilSG() { return m_observations.preboilSG; };
+   double getObservedPreboilVolume() { return m_observations.preboilVolume; };
+   double getObservedPostboilVolume() { return m_observations.postboilVolume; };
+   double getObservedFermenterVolume() {return m_observations.fermenterVolume;};
+   double getObservedColor() { return m_observations.color; };
+   double getObservedBitterness() { return m_observations.bitterness; };
 
    void print();
 private:
@@ -70,6 +81,7 @@ private:
    std::vector<yeast> m_yeasts;
    std::string m_recipeNote;
    std::map<std::string,std::string> m_metadata;
+   BrewSpecifications m_observations;
 
    // private function
    void calculateStrikeWaterTemperatures();

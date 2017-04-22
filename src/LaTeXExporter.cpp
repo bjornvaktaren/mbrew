@@ -20,19 +20,25 @@ void LaTeXExporter::save(std::string file)
      << " &  Estimations  & Observed \\\\\n"
      << "\\midrule\n"
      << std::fixed << std::setprecision(0) 
-     << "Color & " << m_brew->getColorMoreyEBC() << " EBC & \\\\\n"
+     << "Color & " << m_brew->getColorMoreyEBC() << " EBC & "
+     << m_brew->getObservedColor() << "\\\\\n"
      << std::setprecision(1)
-     << "Preboil Volume & " << m_brew->getPreboilVolume() << " liter & \\\\\n"
-     << "Postboil Volume & " << m_brew->getPostboilVolume() << " liter & \\\\\n"
-     << "Fermenter Volume & " << m_brew->getVolumeIntoFermenter() 
-     << " liter & \\\\\n" 
+     << "Preboil Volume & " << m_brew->getPreboilVolume() << " liter & "
+     << m_brew->getObservedPreboilVolume() << " \\\\\n"
+     << "Postboil Volume & " << m_brew->getPostboilVolume() << " liter & "
+     << m_brew->getObservedPostboilVolume() << " \\\\\n"
+     << "Fermenter Volume & " << m_brew->getVolumeIntoFermenter() << " liter & "
+     << m_brew->getObservedFermenterVolume() << " \\\\\n"
      << std::setprecision(3)
-     << "Preboil SG & " << m_brew->getPreboilSG() << " & \\\\\n"
-     << "OG & " << m_brew->getPostboilSG() << " & \\\\\n"
+     << "Preboil SG & " << m_brew->getPreboilSG() << " & "
+     << m_brew->getObservedPreboilSG() << " \\\\\n"
+     << "OG & " << m_brew->getPostboilSG() << " & "
+     << m_brew->getObservedOG() << " \\\\\n"
      << "FG & " << m_brew->getFGLow() << " to " 
-     << m_brew->getFGHigh() << " & \\\\\n"
+     << m_brew->getFGHigh() << " & " << m_brew->getObservedFG() << " \\\\\n"
      << std::setprecision(0)
-     << "Bitterness & " << m_brew->getTotalIBU() << " IBU & \\\\\n"
+     << "Bitterness & " << m_brew->getTotalIBU() << " IBU & "
+     << m_brew->getObservedBitterness() << " \\\\\n"
      << "\\bottomrule\n"
      << "\\end{tabular}\n"
      << '\n'

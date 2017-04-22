@@ -136,9 +136,10 @@ int main(int argc, char* argv[])
    std::vector<mash> mashes;
    brewery brewery;
    std::string note;
+   BrewSpecifications observations;
    ConfReader confReader;
-   if ( !confReader.readRecipe(inputRecipe, metadata, 
-			       fermentables, hops, yeasts, mashes, note) ) {
+   if ( !confReader.readRecipe(inputRecipe, metadata, fermentables, hops, 
+			       yeasts, mashes, note, observations) ) {
       std::cerr << "ERROR: Could not open " << inputRecipe << '\n';
       exit(EXIT_FAILURE);
    }
@@ -157,6 +158,7 @@ int main(int argc, char* argv[])
    Brew brew(brewery, fermentables, mashes, hops, yeasts);
    brew.setNote(note);
    brew.setMetadata(metadata);
+   brew.setObservations(observations);
    brew.print();
 
    if ( ! latexFile.empty() ) {

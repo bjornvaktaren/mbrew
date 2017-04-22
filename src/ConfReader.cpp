@@ -94,7 +94,8 @@ bool ConfReader::readRecipe(std::string fileName,
 			    std::vector<hop> &hops,
 			    std::vector<yeast> &yeasts,
 			    std::vector<mash> &mashes,
-			    std::string &note
+			    std::string &note,
+			    BrewSpecifications &observations
 			    )
 {
    std::ifstream recipe(fileName);
@@ -191,6 +192,37 @@ bool ConfReader::readRecipe(std::string fileName,
       	    }
       	 }
       	 note = noteStream.str();
+      }
+      else if ( line.compare("# Observations") == 0 ) {
+      	 while ( std::getline(recipe,line) ) {
+      	    if ( line.empty() ) break;
+      	    else if ( line.at(0) == '#' ) continue;
+      	    strings = splitConfString(line);
+      	    if ( strings.at(0).compare("OG") == 0 ) {
+	       observations.OG = stod(strings.at(1));
+      	    }
+      	    else if ( strings.at(0).compare("FG") == 0 ) {
+	       observations.FG = stod(strings.at(1));
+      	    }
+      	    else if ( strings.at(0).compare("PreboilSG") == 0 ) {
+	       observations.preboilSG = stod(strings.at(1));
+      	    }
+      	    else if ( strings.at(0).compare("PreboilVolume") == 0 ) {
+	       observations.preboilVolume = stod(strings.at(1));
+      	    }
+      	    else if ( strings.at(0).compare("PostboilVolume") == 0 ) {
+	       observations.postboilVolume = stod(strings.at(1));
+      	    }
+      	    else if ( strings.at(0).compare("FermenterVolume") == 0 ) {
+	       observations.fermenterVolume = stod(strings.at(1));
+      	    }
+      	    else if ( strings.at(0).compare("Bitterness") == 0 ) {
+	       observations.bitterness = stod(strings.at(1));
+      	    }
+      	    else if ( strings.at(0).compare("Color") == 0 ) {
+	       observations.color = stod(strings.at(1));
+      	    }
+      	 }
       }
    }
    recipe.close();

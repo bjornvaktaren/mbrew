@@ -54,4 +54,16 @@ struct brewery
    double grainMashInTemperature = 20.0; // C, mash tun starting temperature
 };
 
+struct BrewSpecifications
+{
+   double OG = -1.0;
+   double FG = -1.0;
+   double preboilSG = -1.0;
+   double preboilVolume = -1.0;
+   double postboilVolume = -1.0;
+   double fermenterVolume = -1.0;
+   double color = -1.0;
+   double bitterness = -1.0;
+};
+
 #endif

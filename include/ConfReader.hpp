@@ -25,7 +25,8 @@ public:
 		   std::vector<hop> &hops,
 		   std::vector<yeast> &yeasts,
 		   std::vector<mash> &mashes,
-		   std::string &note
+		   std::string &note,
+		   BrewSpecifications &observations
 		   );
    bool readBrewery(std::string fileName, brewery &b);
 private:

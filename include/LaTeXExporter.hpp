@@ -27,8 +27,6 @@ private:
       "\\setmainfont{LiberationSans}\n"
       "\n"
       "\\subtitle{Beer Recipe and Brewlog}\n";
-   
-   // private function
 
 };
 
