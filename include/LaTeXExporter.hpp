@@ -1,12 +1,9 @@
 #ifndef LATEXEXPORTER_H
 #define LATEXEXPORTER_H
 
-// #include <vector>
-// #include <map>
-// #include <math.h>
+#include <cmath>
 #include <fstream>
-// #include <iomanip>
-// #include <string>
+#include <sstream>
 
 // Local includes
 #include <Brew.hpp>
@@ -21,7 +18,7 @@ public:
 private:
    // class members
    Brew *m_brew;
-   std::string m_preample = "\\documentclass{scrartcl}\n"
+   std::string m_preample = "\\documentclass[DIV=12,10pt]{scrartcl}\n"
       "\n"
       "\\usepackage{fontspec}\n"
       "\\usepackage{siunitx}\n"

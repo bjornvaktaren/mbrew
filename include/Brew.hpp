@@ -58,6 +58,7 @@ public:
    std::vector<mash> getMashes() { return m_mashes; };
    std::vector<hop> getHops() { return m_hops; };
    std::vector<yeast> getYeasts() { return m_yeasts; };
+   std::string getNote() { return m_recipeNote; };
 
    void print();
 private:
