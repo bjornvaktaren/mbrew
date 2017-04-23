@@ -27,7 +27,7 @@ private:
       "\\setmainfont{LiberationSans}\n"
       "\n"
       "\\subtitle{Beer Recipe and Brewlog}\n";
-
+   std::string formatQuantity(double quantity, int precision = 1);
 };
 
 #endif

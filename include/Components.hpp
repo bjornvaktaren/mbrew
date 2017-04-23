@@ -2,6 +2,7 @@
 #define COMPONENTS_H
 
 #include <string>
+#include <Constants.hpp>
 
 struct fermentable
 {
@@ -56,14 +57,14 @@ struct brewery
 
 struct BrewSpecifications
 {
-   double OG = -1.0;
-   double FG = -1.0;
-   double preboilSG = -1.0;
-   double preboilVolume = -1.0;
-   double postboilVolume = -1.0;
-   double fermenterVolume = -1.0;
-   double color = -1.0;
-   double bitterness = -1.0;
+   double OG = kConst::kDoubleUndefined;
+   double FG = kConst::kDoubleUndefined;
+   double preboilSG = kConst::kDoubleUndefined;
+   double preboilVolume = kConst::kDoubleUndefined;
+   double postboilVolume = kConst::kDoubleUndefined;
+   double fermenterVolume = kConst::kDoubleUndefined;
+   double color = kConst::kDoubleUndefined;
+   double bitterness = kConst::kDoubleUndefined;
 };
 
 #endif

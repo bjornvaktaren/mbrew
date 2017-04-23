@@ -1,5 +1,15 @@
 #include "LaTeXExporter.hpp"
 
+std::string LaTeXExporter::formatQuantity(double quantity, int precision)
+{
+   
+   std::stringstream ss;
+   ss << std::fixed << std::setprecision(precision) << quantity;
+   return ( quantity < kConst::kDoubleUndefined*0.999 && 
+	    quantity > kConst::kDoubleUndefined*1.001 ? 
+	    kConst::kStrUndefined : ss.str() );
+}
+
 void LaTeXExporter::save(std::string file)
 {
    std::ofstream f;
@@ -21,24 +31,25 @@ void LaTeXExporter::save(std::string file)
      << "\\midrule\n"
      << std::fixed << std::setprecision(0) 
      << "Color & " << m_brew->getColorMoreyEBC() << " EBC & "
-     << m_brew->getObservedColor() << "\\\\\n"
+     << formatQuantity(m_brew->getObservedColor(), 0) << "\\\\\n"
      << std::setprecision(1)
      << "Preboil Volume & " << m_brew->getPreboilVolume() << " liter & "
-     << m_brew->getObservedPreboilVolume() << " \\\\\n"
+     << formatQuantity(m_brew->getObservedPreboilVolume(), 1) << " \\\\\n"
      << "Postboil Volume & " << m_brew->getPostboilVolume() << " liter & "
-     << m_brew->getObservedPostboilVolume() << " \\\\\n"
+     << formatQuantity(m_brew->getObservedPostboilVolume(), 1) << " \\\\\n"
      << "Fermenter Volume & " << m_brew->getVolumeIntoFermenter() << " liter & "
-     << m_brew->getObservedFermenterVolume() << " \\\\\n"
+     << formatQuantity(m_brew->getObservedFermenterVolume(), 1) << " \\\\\n"
      << std::setprecision(3)
      << "Preboil SG & " << m_brew->getPreboilSG() << " & "
-     << m_brew->getObservedPreboilSG() << " \\\\\n"
+     << formatQuantity(m_brew->getObservedPreboilSG(), 3) << " \\\\\n"
      << "OG & " << m_brew->getPostboilSG() << " & "
-     << m_brew->getObservedOG() << " \\\\\n"
+     << formatQuantity(m_brew->getObservedOG(), 3) << " \\\\\n"
      << "FG & " << m_brew->getFGLow() << " to " 
-     << m_brew->getFGHigh() << " & " << m_brew->getObservedFG() << " \\\\\n"
+     << m_brew->getFGHigh() << " & " 
+     << formatQuantity(m_brew->getObservedFG(), 3) << " \\\\\n"
      << std::setprecision(0)
      << "Bitterness & " << m_brew->getTotalIBU() << " IBU & "
-     << m_brew->getObservedBitterness() << " \\\\\n"
+     << formatQuantity(m_brew->getObservedBitterness(), 0) << " \\\\\n"
      << "\\bottomrule\n"
      << "\\end{tabular}\n"
      << '\n'
@@ -98,10 +109,10 @@ void LaTeXExporter::save(std::string file)
      << "\\bottomrule\n"
      << "\\end{tabular}\n"
      << '\n'
-     << "\\section*{Mash}\n"
+     << "\\section*{Mash, Sparge, and Boil}\n"
      << "\\begin{tabular}{l c c c c}\n"
      << "\\toprule\n"
-     << "Name & Volume (liter) & Temperature (C) & Time (min) & "
+     << "Name & Water added (liter) & Temperature (C) & Time (min) & "
      << "Strike water temp. (C) \\\\\n"
      << "\\midrule\n";
    for ( auto m : m_brew->getMashes() ) {
