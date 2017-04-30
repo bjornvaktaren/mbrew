@@ -6,7 +6,9 @@ else
     recipe=$1
     tmp_dir=export_pdf_tmp
     mkdir -p $tmp_dir
+    # extract recipe name by stripping path
     name=${recipe/\/*\//}
+    # also strip extension
     name=${name/.*/}
     latex=${name/.*/}.tex
     pdf=${name/.*/}.pdf
