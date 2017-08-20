@@ -60,8 +60,10 @@ void LaTeXExporter::save(std::string file)
      << "\\toprule\n"
      << " &  Specification  & Observed \\\\\n"
      << "\\midrule\n"
-      // << "Name  & " 
-      // << "Mash efficiency & " 
+     << "Name  & " << m_brew->getBreweryName() << " & \\\\\n"
+     << "Mash efficiency & " << std::setprecision(2)
+     << m_brew->getBreweryEfficiency() << " & "
+     << m_brew->getObservedEfficiency() << " \\\\\n"
       // << "Boil evaporation rate & "
       // << "Hop utilization & " 
      << "\\bottomrule\n"
@@ -76,7 +78,9 @@ void LaTeXExporter::save(std::string file)
    for ( auto ferm : m_brew->getFermentables() ) {
       f << ferm.name << " & " << ferm.weight << " & " 
 	<< ( ferm.mash ? "Mash" : "Boil" ) << " & " << ferm.color << " & "
-	<< ferm.extract << " & " << 0.0 << " \\\\\n"; 
+	<< ferm.extract << " & " << std::setprecision(3) 
+	<< 1.0 + m_brew->getOechle(ferm, m_brew->getPostboilVolume())/1000.0
+	<< " \\\\\n"; 
       totalWeight += ferm.weight;
    }
    f << "\\midrule\n"

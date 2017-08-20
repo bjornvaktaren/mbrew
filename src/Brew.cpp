@@ -182,6 +182,25 @@ double Brew::getSG(double volume)
    return (1.0 + m_brewery.efficiency*oechle*1e-3/volume*kConst::kGal2Litre);
 }
 
+double Brew::getObservedEfficiency()
+{
+   double oechle = 0.0;
+   for ( auto f : m_fermentables ) {
+      oechle += 46.0*f.extract*f.weight*kConst::kkg2lbs*1e-5;
+   }
+   if ( m_observations.preboilSG > 0.0 ) {
+      return ( (m_observations.preboilSG - 1.0)
+	       / (oechle*1e-3*kConst::kGal2Litre)
+	       * m_observations.preboilVolume );
+   }
+   else if ( m_observations.OG > 0.0 ) {
+      return ( (m_observations.OG - 1.0)
+	       / (oechle*1e-3*kConst::kGal2Litre)
+	       * m_observations.postboilVolume );
+   }
+   else return -1.0;
+}
+
 double Brew::getFGHigh()
 {
    double attenuationLow = 1.0;

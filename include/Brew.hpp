@@ -62,6 +62,16 @@ public:
    std::string getNote() { return m_recipeNote; };
    BrewSpecifications getObservations() { return m_observations; };
 
+   std::string getBreweryName() { return m_brewery.name; };
+   double getBreweryEfficiency() { return m_brewery.efficiency; };
+   double getBreweryBoilEvaporationRate()
+      { return m_brewery.boilEvaporationRate; };
+   double getBreweryMashDeadSpace() { return m_brewery.mashDeadSpace; };
+   double getBreweryKettleDeadSpace() { return m_brewery.kettleDeadSpace; };
+   double getBreweryWaterLostToMalt() { return m_brewery.waterLostToMalt; };
+   double getBreweryWaterLostToHops() { return m_brewery.waterLostToHops; };
+   double getBreweryHopsUtilization() { return m_brewery.hopsUtilization; };
+
    double getObservedOG() { return m_observations.OG; };
    double getObservedFG() { return m_observations.FG; };
    double getObservedPreboilSG() { return m_observations.preboilSG; };
@@ -70,6 +80,8 @@ public:
    double getObservedFermenterVolume() {return m_observations.fermenterVolume;};
    double getObservedColor() { return m_observations.color; };
    double getObservedBitterness() { return m_observations.bitterness; };
+
+   double getObservedEfficiency();
 
    void print();
 private:
