@@ -31,15 +31,17 @@ void LaTeXExporter::save(std::string file)
      << "\\midrule\n"
      << std::fixed << std::setprecision(0) 
      << "Color & " << m_brew->getColorMoreyEBC() << " EBC & "
-     << formatQuantity(m_brew->getObservedColor(), 0) << "\\\\\n"
+     << formatQuantity(m_brew->getObservedColor(), 0)
+     << (m_brew->getObservedColor() > 0 ? " EBC" : " " ) << " \\\\\n"
      << std::setprecision(1)
      << "Preboil Volume & " << m_brew->getPreboilVolume() << " liter & "
-     << formatQuantity(m_brew->getObservedPreboilVolume(), 1) << " \\\\\n"
+     << formatQuantity(m_brew->getObservedPreboilVolume(), 1) << " liter \\\\\n"
      << "Postboil Volume & " << m_brew->getPostboilVolume() << " liter & "
-     << formatQuantity(m_brew->getObservedPostboilVolume(), 1) << " \\\\\n"
+     << formatQuantity(m_brew->getObservedPostboilVolume(), 1)
+     << " liter \\\\\n"
      << "Fermenter Volume & " << m_brew->getVolumeIntoFermenter() << " liter & "
-     << formatQuantity(m_brew->getObservedFermenterVolume(), 1) << " \\\\\n"
-     << std::setprecision(3)
+     << formatQuantity(m_brew->getObservedFermenterVolume(), 1)
+     << " liter\\\\\n" << std::setprecision(3)
      << "Preboil SG & " << m_brew->getPreboilSG() << " & "
      << formatQuantity(m_brew->getObservedPreboilSG(), 3) << " \\\\\n"
      << "OG & " << m_brew->getPostboilSG() << " & "
@@ -49,7 +51,19 @@ void LaTeXExporter::save(std::string file)
      << formatQuantity(m_brew->getObservedFG(), 3) << " \\\\\n"
      << std::setprecision(0)
      << "Bitterness & " << m_brew->getTotalIBU() << " IBU & "
-     << formatQuantity(m_brew->getObservedBitterness(), 0) << " \\\\\n"
+     << formatQuantity(m_brew->getObservedBitterness(), 0) << " IBU \\\\\n"
+     << "\\bottomrule\n"
+     << "\\end{tabular}\n"
+     << '\n'
+     << "\\section*{Bewery}\n"
+     << "\\begin{tabular}{l c c}\n"
+     << "\\toprule\n"
+     << " &  Specification  & Observed \\\\\n"
+     << "\\midrule\n"
+      // << "Name  & " 
+      // << "Mash efficiency & " 
+      // << "Boil evaporation rate & "
+      // << "Hop utilization & " 
      << "\\bottomrule\n"
      << "\\end{tabular}\n"
      << '\n'
