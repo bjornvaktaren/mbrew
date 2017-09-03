@@ -48,6 +48,9 @@ public:
    double getBoilDuration();
    double getFGHigh();
    double getFGLow();
+   double getABV(double og, double fg) { return (og-fg)*131.25; };
+   double getABVLow() { return getABV(getPostboilSG(), getFGHigh()); };
+   double getABVHigh() { return getABV(getPostboilSG(), getFGLow()); };
 
    std::string getMetadata(std::string key) { return m_metadata[key]; };
 

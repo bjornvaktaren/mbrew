@@ -326,6 +326,9 @@ void Brew::print()
 	     << "Postboil Gravity:    " << this->getPostboilSG() << " \n"
 	     << "Postferment Gravity: " << this->getFGLow() << " to " 
 	     << this->getFGHigh() << '\n'
+	     << std::setprecision(1)
+	     << "ABV:                 " << this->getABVLow() << "% to "
+	     << this->getABVHigh() << "%\n"
 	     << std::setprecision(0)
 	     << "Bitterness:          " << this->getTotalIBU() << " IBU\n";
 
