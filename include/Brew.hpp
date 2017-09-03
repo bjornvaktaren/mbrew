@@ -83,7 +83,7 @@ public:
    double getObservedFermenterVolume() {return m_observations.fermenterVolume;};
    double getObservedColor() { return m_observations.color; };
    double getObservedBitterness() { return m_observations.bitterness; };
-
+   double getObservedBoilEvaporationRate();
    double getObservedEfficiency();
 
    void print();

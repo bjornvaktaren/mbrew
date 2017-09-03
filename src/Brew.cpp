@@ -247,6 +247,21 @@ double Brew::getColorMoreyEBC()
    return 1.4922*pow(mcu,0.6859)/kConst::kEBC2SRM; // Morey's formula
 }
 
+double Brew::getObservedBoilEvaporationRate()
+{
+   double preboilVolume = this->getObservedPreboilVolume();
+   double postboilVolume = this->getObservedPostboilVolume();
+   double boilDuration = this->getBoilDuration();
+   if (    ( preboilVolume < 0.99*kConst::kDoubleUndefined
+	     && preboilVolume > 1.01*kConst::kDoubleUndefined )
+	|| ( postboilVolume < 0.99*kConst::kDoubleUndefined
+	     && preboilVolume > 1.01*kConst::kDoubleUndefined )
+	|| ( boilDuration < 0.99*kConst::kDoubleUndefined
+	     && preboilVolume > 1.01*kConst::kDoubleUndefined ) ) {
+      return kConst::kDoubleUndefined;
+   }
+   else return (preboilVolume - postboilVolume) / boilDuration;
+}
 
 void Brew::print()
 {

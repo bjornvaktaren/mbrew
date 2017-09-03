@@ -29,28 +29,34 @@ void LaTeXExporter::save(std::string file)
      << "\\toprule\n"
      << " &  Estimations  & Observed \\\\\n"
      << "\\midrule\n"
-     << std::fixed << std::setprecision(0) 
-     << "Color & " << m_brew->getColorMoreyEBC() << " EBC & "
+     << std::fixed
+     << "Color & " << formatQuantity(m_brew->getColorMoreyEBC(), 0)
+     << " EBC & "
      << formatQuantity(m_brew->getObservedColor(), 0)
      << (m_brew->getObservedColor() > 0 ? " EBC" : " " ) << " \\\\\n"
-     << std::setprecision(1)
-     << "Preboil Volume & " << m_brew->getPreboilVolume() << " liter & "
-     << formatQuantity(m_brew->getObservedPreboilVolume(), 1) << " liter \\\\\n"
-     << "Postboil Volume & " << m_brew->getPostboilVolume() << " liter & "
-     << formatQuantity(m_brew->getObservedPostboilVolume(), 1)
+     << "Preboil Volume & " << formatQuantity(m_brew->getPreboilVolume(), 1)
+     << " liter & " << formatQuantity(m_brew->getObservedPreboilVolume(), 1)
      << " liter \\\\\n"
-     << "Fermenter Volume & " << m_brew->getVolumeIntoFermenter() << " liter & "
+     << "Postboil Volume & " << formatQuantity(m_brew->getPostboilVolume(), 1)
+     << " liter & " << formatQuantity(m_brew->getObservedPostboilVolume(), 1)
+     << " liter \\\\\n"
+     << "Fermenter Volume & "
+     << formatQuantity(m_brew->getVolumeIntoFermenter(), 1) << " liter & "
      << formatQuantity(m_brew->getObservedFermenterVolume(), 1)
-     << " liter\\\\\n" << std::setprecision(3)
-     << "Preboil SG & " << m_brew->getPreboilSG() << " & "
+     << " liter\\\\\n"
+     << "Preboil SG & " << formatQuantity(m_brew->getPreboilSG(), 3) << " & "
      << formatQuantity(m_brew->getObservedPreboilSG(), 3) << " \\\\\n"
-     << "OG & " << m_brew->getPostboilSG() << " & "
+     << "OG & " << formatQuantity(m_brew->getPostboilSG(), 3) << " & "
      << formatQuantity(m_brew->getObservedOG(), 3) << " \\\\\n"
-     << "FG & " << m_brew->getFGLow() << " to " 
-     << m_brew->getFGHigh() << " & " 
+     << "FG & " << formatQuantity(m_brew->getFGLow(), 3) << "--" 
+     << formatQuantity(m_brew->getFGHigh(), 3) << " & " 
      << formatQuantity(m_brew->getObservedFG(), 3) << " \\\\\n"
-     << std::setprecision(0)
-     << "Bitterness & " << m_brew->getTotalIBU() << " IBU & "
+     << "ABV & " << formatQuantity(m_brew->getABVLow(),1) << "--"
+     << formatQuantity(m_brew->getABVHigh(),1) << "\\% & "
+     << formatQuantity(m_brew->getABV(m_brew->getObservedOG(),
+				      m_brew->getObservedFG()), 1)
+     << "\\% \\\\\n"
+     << "Bitterness & " << formatQuantity(m_brew->getTotalIBU(), 0)<< " IBU & "
      << formatQuantity(m_brew->getObservedBitterness(), 0) << " IBU \\\\\n"
      << "\\bottomrule\n"
      << "\\end{tabular}\n"
@@ -61,10 +67,13 @@ void LaTeXExporter::save(std::string file)
      << " &  Specification  & Observed \\\\\n"
      << "\\midrule\n"
      << "Name  & " << m_brew->getBreweryName() << " & \\\\\n"
-     << "Mash efficiency & " << std::setprecision(2)
-     << m_brew->getBreweryEfficiency() << " & "
-     << m_brew->getObservedEfficiency() << " \\\\\n"
-      // << "Boil evaporation rate & "
+     << "Mash efficiency & "
+     << formatQuantity(m_brew->getBreweryEfficiency(), 2) << " & "
+     << formatQuantity(m_brew->getObservedEfficiency(), 2) << " \\\\\n"
+     << "Boil evaporation rate & "
+     << formatQuantity(m_brew->getBreweryBoilEvaporationRate(), 1) << " & "
+     << formatQuantity(m_brew->getObservedBoilEvaporationRate(), 1)
+     << " \\\\\n"
       // << "Hop utilization & " 
      << "\\bottomrule\n"
      << "\\end{tabular}\n"
@@ -72,19 +81,22 @@ void LaTeXExporter::save(std::string file)
      << "\\section*{Fermentables}\n"
      << "\\begin{tabular}{l c c c c c}\n"
      << "\\toprule\n"
-     << "Name &  Weight (g) & Added & Color (EBC) & Potential (\\%) & OG \\\\\n"
+     << "Name & Weight (g) & Added & Color (EBC) & Potential (\\%) & OG \\\\\n"
      << "\\midrule\n";
    double totalWeight = 0.0;
    for ( auto ferm : m_brew->getFermentables() ) {
-      f << ferm.name << " & " << ferm.weight << " & " 
-	<< ( ferm.mash ? "Mash" : "Boil" ) << " & " << ferm.color << " & "
-	<< ferm.extract << " & " << std::setprecision(3) 
-	<< 1.0 + m_brew->getOechle(ferm, m_brew->getPostboilVolume())/1000.0
+      f << ferm.name << " & " << formatQuantity(ferm.weight, 0) << " & " 
+	<< ( ferm.mash ? "Mash" : "Boil" ) << " & "
+	<< formatQuantity(ferm.color, 1) << " & "
+	<< formatQuantity(ferm.extract, 1) << " & "
+	<< formatQuantity(1.0 +
+			  m_brew->getOechle(ferm, m_brew->getPostboilVolume())
+			  /1000.0, 3)
 	<< " \\\\\n"; 
       totalWeight += ferm.weight;
    }
    f << "\\midrule\n"
-     << "Total & " << totalWeight << " & & & & \\\\\n"
+     << "Total & " << formatQuantity(totalWeight, 0) << " & & & & \\\\\n"
      << "\\bottomrule\n"
      << "\\end{tabular}\n"
      << '\n'
