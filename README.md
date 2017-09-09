@@ -15,11 +15,11 @@ Setup
 Usage
 =====
 
-Fire, run mbrew on the example recipe included:
+Run mbrew on the example recipe included:
 
     ./mbrew recipe.conf
 
-Have a look at the output. It should be self-explanatory if you have brewed beer before.
+Have a look at the output. It should be rather self-explanatory.
 
 To-do:
 =====
