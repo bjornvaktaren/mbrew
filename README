@@ -1,3 +1,26 @@
-TO-DO:
-LaTeX exporter
+mbrew
+=====
+
+A minimalistic beer recipe creator.
+
+Setup
+=====
+
+* Clone the repository
+
+* cd to the directory and compile
+
+    cd mbrew && make
+
+Usage
+=====
+
+Fire, run mbrew on the example recipe included:
+
+    ./mbrew recipe.conf
+
+Have a look at the output. It should be self-explanatory if you have brewed beer before.
+
+To-do:
+=====
 Water treatment calculations
