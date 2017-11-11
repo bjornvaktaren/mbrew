@@ -36,14 +36,16 @@ void LaTeXExporter::save(std::string file)
      << (m_brew->getObservedColor() > 0 ? " EBC" : " " ) << " \\\\\n"
      << "Preboil Volume & " << formatQuantity(m_brew->getPreboilVolume(), 1)
      << " liter & " << formatQuantity(m_brew->getObservedPreboilVolume(), 1)
-     << " liter \\\\\n"
+     << (m_brew->getObservedPreboilVolume() > 0 ? " liter " : " " ) << "\\\\\n"
      << "Postboil Volume & " << formatQuantity(m_brew->getPostboilVolume(), 1)
      << " liter & " << formatQuantity(m_brew->getObservedPostboilVolume(), 1)
-     << " liter \\\\\n"
+     << (m_brew->getObservedPostboilVolume() > 0 ? " liter " : " " )
+     << "\\\\\n"
      << "Fermenter Volume & "
      << formatQuantity(m_brew->getVolumeIntoFermenter(), 1) << " liter & "
      << formatQuantity(m_brew->getObservedFermenterVolume(), 1)
-     << " liter\\\\\n"
+     << (m_brew->getObservedFermenterVolume() > 0 ? " liter" : " " )
+     << "\\\\\n"
      << "Preboil SG & " << formatQuantity(m_brew->getPreboilSG(), 3) << " & "
      << formatQuantity(m_brew->getObservedPreboilSG(), 3) << " \\\\\n"
      << "OG & " << formatQuantity(m_brew->getPostboilSG(), 3) << " & "
@@ -57,7 +59,8 @@ void LaTeXExporter::save(std::string file)
 				      m_brew->getObservedFG()), 1)
      << "\\% \\\\\n"
      << "Bitterness & " << formatQuantity(m_brew->getTotalIBU(), 0)<< " IBU & "
-     << formatQuantity(m_brew->getObservedBitterness(), 0) << " IBU \\\\\n"
+     << formatQuantity(m_brew->getObservedBitterness(), 0)
+     << (m_brew->getObservedBitterness() > 0.0 ? " IBU" : " " ) << " \\\\\n"
      << "\\bottomrule\n"
      << "\\end{tabular}\n"
      << '\n'

@@ -188,17 +188,19 @@ double Brew::getObservedEfficiency()
    for ( auto f : m_fermentables ) {
       oechle += 46.0*f.extract*f.weight*kConst::kkg2lbs*1e-5;
    }
-   if ( m_observations.preboilSG > 0.0 ) {
+   if ( m_observations.preboilSG > 0.0
+	&& m_observations.preboilVolume > 0.0 ) {
       return ( (m_observations.preboilSG - 1.0)
 	       / (oechle*1e-3*kConst::kGal2Litre)
 	       * m_observations.preboilVolume );
    }
-   else if ( m_observations.OG > 0.0 ) {
+   else if ( m_observations.OG > 0.0
+	     && m_observations.postboilVolume > 0.0 ) {
       return ( (m_observations.OG - 1.0)
 	       / (oechle*1e-3*kConst::kGal2Litre)
 	       * m_observations.postboilVolume );
    }
-   else return -1.0;
+   else return kConst::kDoubleUndefined;
 }
 
 double Brew::getFGHigh()
@@ -253,11 +255,11 @@ double Brew::getObservedBoilEvaporationRate()
    double postboilVolume = this->getObservedPostboilVolume();
    double boilDuration = this->getBoilDuration();
    if (    ( preboilVolume < 0.99*kConst::kDoubleUndefined
-	     && preboilVolume > 1.01*kConst::kDoubleUndefined )
+	     || preboilVolume > 1.01*kConst::kDoubleUndefined )
 	|| ( postboilVolume < 0.99*kConst::kDoubleUndefined
-	     && preboilVolume > 1.01*kConst::kDoubleUndefined )
+	     || preboilVolume > 1.01*kConst::kDoubleUndefined )
 	|| ( boilDuration < 0.99*kConst::kDoubleUndefined
-	     && preboilVolume > 1.01*kConst::kDoubleUndefined ) ) {
+	     || preboilVolume > 1.01*kConst::kDoubleUndefined ) ) {
       return kConst::kDoubleUndefined;
    }
    else return (preboilVolume - postboilVolume) / boilDuration;
