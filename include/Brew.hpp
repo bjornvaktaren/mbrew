@@ -15,20 +15,22 @@ class Brew
 {
 public:
    Brew(){};
-   Brew(brewery brewery,
-	std::vector<fermentable> fermentables, 
-	std::vector<mash> mashes, 
-	std::vector<hop> hops);
-   Brew(brewery brewery,
-	std::vector<fermentable> fermentables, 
-	std::vector<mash> mashes, 
-	std::vector<hop> hops,
-	std::vector<yeast> yeasts);
+   Brew(const brewery &brewery,
+	const std::vector<fermentable> &fermentables, 
+	const std::vector<mash> &mashes, 
+	const std::vector<hop> &hops);
+   Brew(const brewery &brewery,
+	const std::vector<fermentable> &fermentables, 
+	const std::vector<mash> &mashes, 
+	const std::vector<hop> &hops,
+	const std::vector<yeast> &yeasts);
    ~Brew(){};
 
-   void setNote(std::string note) { m_recipeNote = note; }
-   void setMetadata(std::map<std::string,std::string> m) { m_metadata = m; }
-   void setObservations(BrewSpecifications o) { m_observations = o; }
+   void setNote(const std::string &note) { m_recipeNote = note; }
+   void setMetadata(const std::map<std::string,std::string> &m) {
+      m_metadata = m;
+   }
+   void setObservations(const BrewSpecifications &o) { m_observations = o; }
 
    double getStrikeWaterTemperature(mash m);
    double getStrikeWaterTemperature(mash mash, double temp);

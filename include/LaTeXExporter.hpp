@@ -11,9 +11,9 @@
 class LaTeXExporter
 {
 public:
-   LaTeXExporter(){}
-   LaTeXExporter(Brew *brew) { m_brew = brew; }
-   ~LaTeXExporter(){}
+   LaTeXExporter(){};
+   LaTeXExporter(Brew &brew) { m_brew = &brew; };
+   ~LaTeXExporter(){};
    void save(std::string file);
 private:
    // class members

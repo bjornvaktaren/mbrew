@@ -12,7 +12,7 @@
 #include <LaTeXExporter.hpp>
 // #include <Constants.hpp>
 
-void help(std::string prog)
+void help(const std::string &prog)
 {
    std::cout << prog << "\n\n"
 	     << "SYNOPSIS\n"
@@ -162,7 +162,7 @@ int main(int argc, char* argv[])
    brew.print();
 
    if ( ! latexFile.empty() ) {
-      LaTeXExporter exporter(&brew);
+      LaTeXExporter exporter(brew);
       exporter.save(latexFile);
    }
 

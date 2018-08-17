@@ -1,9 +1,9 @@
 #include "Brew.hpp"
 
-Brew::Brew(brewery brewery,
-	   std::vector<fermentable> fermentables, 
-	   std::vector<mash> mashes, 
-	   std::vector<hop> hops) : 
+Brew::Brew(const brewery &brewery,
+	   const std::vector<fermentable> &fermentables, 
+	   const std::vector<mash> &mashes, 
+	   const std::vector<hop> &hops) : 
    m_brewery(brewery), 
    m_fermentables(fermentables), 
    m_mashes(mashes), 
@@ -12,11 +12,11 @@ Brew::Brew(brewery brewery,
    this->calculateStrikeWaterTemperatures();
 }
 
-Brew::Brew(brewery brewery,
-	   std::vector<fermentable> fermentables, 
-	   std::vector<mash> mashes, 
-	   std::vector<hop> hops,
-	   std::vector<yeast> yeasts) : 
+Brew::Brew(const brewery &brewery,
+	   const std::vector<fermentable> &fermentables, 
+	   const std::vector<mash> &mashes, 
+	   const std::vector<hop> &hops,
+	   const std::vector<yeast> &yeasts) : 
    m_brewery(brewery), 
    m_fermentables(fermentables), 
    m_mashes(mashes), 
