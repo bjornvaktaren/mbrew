@@ -23,6 +23,13 @@ public:
       m_exponents{{meter, kilogram, second, ampere, kelvin, mole, candela}}
    {
    };
+
+   Scalar<meter, kilogram, second, ampere, kelvin, mole, candela>
+   (const Scalar<meter, kilogram, second, ampere, kelvin, mole, candela> &s) :
+      m_value{s.getValue()},
+      m_exponents{{meter, kilogram, second, ampere, kelvin, mole, candela}}
+   {
+   };
    
    std::string printUnits() const
    {
@@ -38,6 +45,14 @@ public:
    double getValue() const { return m_value; };
    void setValue(double value) { m_value = value; };
 
+
+   void
+   operator=(const Scalar<meter, kilogram, second, ampere, kelvin, mole,
+   	     candela> &scalar)
+   {
+      m_value = scalar.getValue();
+   };
+
    // Define addition, subtraction, multiplication, and division operators.
    
    Scalar<meter, kilogram, second, ampere, kelvin, mole, candela>
@@ -46,6 +61,12 @@ public:
    {
       return Scalar<meter, kilogram, second, ampere, kelvin, mole, candela>
 	 (this->getValue() + other.getValue());
+   }
+   void
+   operator+=(const Scalar<meter, kilogram, second, ampere, kelvin, mole,
+	     candela>& other)
+   {
+      this->setValue(this->getValue() + other.getValue());
    }
    
    Scalar<meter, kilogram, second, ampere, kelvin, mole, candela>
@@ -103,6 +124,15 @@ std::ostream& operator<<(std::ostream& out,
    return out;
 }
 
+namespace SIUnit{
+   // static methods to convert to SI units
+   double C(double celsius)  { return celsius - 273.15; }
+   double kg(double kilogram){ return kilogram; }
+   double g(double gram)     { return 1e-3*gram; }
+   double s(double second)   { return second; }
+   double liter(double liter){ return 1e-3*liter; }
+}
+
 // Define common scalars
 
 typedef Scalar<1,0,0,0,0,0,0> Length;
@@ -116,7 +146,9 @@ typedef Scalar<0,0,-1,0,0,0,0> Frequency;
 
 typedef Scalar<0,0,0,1,0,0,0> Current;
 
-typedef Scalar<-3,1,0,0,0,0,0> Density;
+typedef Scalar<0,0,0,0,1,0,0> Temperature;
 
+typedef Scalar<-3,1,0,0,0,0,0> Density;
+typedef Scalar<2,1,-2,0,-1,0,0> SpecificHeatCapacity;
 
 #endif

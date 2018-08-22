@@ -3,7 +3,7 @@
 
 #include <string>
 #include <Constants.hpp>
-#include <Units.hpp>
+#include <Scalar.hpp>
 
 struct fermentable
 {
@@ -25,16 +25,16 @@ struct hop
 struct mash
 {
    std::string name;
-   double volume = 0.0;
-   Celsius temperature = 0.0_C;
-   double time = 0.0;
-   Celsius mashInTemperature = 0.0_C;
+   Volume volume{SIUnit::liter(0.0)};
+   Temperature temperature{SIUnit::C(0.0)};
+   Time time{SIUnit::s(0.0)};
+   Temperature mashInTemperature{SIUnit::C(0.0)};
 };
 
 struct yeast
 {
    std::string name;
-   Celsius temperature = 0.0_C;
+   Temperature temperature{SIUnit::C(0.0)};
    double time = 0.0;   
    double attenuationLow = 0.75;
    double attenuationHigh = 0.75;
@@ -50,10 +50,12 @@ struct brewery
    double waterLostToMalt = 1.085; // liter/kg
    double waterLostToHops = 0.00835; // liter/gram
    double hopsUtilization = 1.0;
-   double mashTunSpecificHeatCapacity = 510.0; // J/(kg*K), stainless steel
-   Celsius mashTunTemperature = 20.0_C; // mash tun starting temperature
-   double mashTunMass = 0.0; // kg, mash tun mass
-   Celsius grainMashInTemperature = 20.0_C; // mash tun starting temperature
+   SpecificHeatCapacity mashTunSpecificHeatCapacity{510.0}; // stainless steel
+   // mash tun starting temperature
+   Temperature mashTunTemperature{SIUnit::C(20.0)};
+   Mass mashTunMass{SIUnit::kg(0.0)}; // kg, mash tun mass
+   // grain starting temperature
+   Temperature grainMashInTemperature{SIUnit::C(20.0)};
 };
 
 struct BrewSpecifications

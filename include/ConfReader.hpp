@@ -9,6 +9,7 @@
 
 // Local includes
 #include <Components.hpp>
+#include <Scalar.hpp>
 
 class ConfReader
 {

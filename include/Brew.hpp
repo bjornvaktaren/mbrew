@@ -10,7 +10,7 @@
 // Local includes
 #include <Components.hpp>
 #include <Constants.hpp>
-#include <Units.hpp>
+#include <Scalar.hpp>
 
 class Brew
 {
@@ -33,18 +33,18 @@ public:
    }
    void setObservations(const BrewSpecifications &o) { m_observations = o; }
 
-   Celsius getStrikeWaterTemperature(mash m);
-   Celsius getStrikeWaterTemperature(mash mash, Celsius temp);
+   Temperature getStrikeWaterTemperature(mash m);
+   Temperature getStrikeWaterTemperature(mash mash, Temperature temp);
    
-   Liter getPreboilVolume();
-   Liter getPostboilVolume();
-   Liter getVolumeIntoFermenter();
-   Liter getVolumeAtTime(double boilTime);
+   Volume getPreboilVolume();
+   Volume getPostboilVolume();
+   Volume getVolumeIntoFermenter();
+   Volume getVolumeAtTime(double boilTime);
 
    double getIBU(hop h);
    double getTotalIBU();
 
-   double getOechle(fermentable f, Liter volume);
+   double getOechle(fermentable f, Volume volume);
    double getSG(double volume);
    double getPreboilSG();
    double getPostboilSG();
@@ -72,18 +72,18 @@ public:
    double getBreweryEfficiency() { return m_brewery.efficiency; };
    double getBreweryBoilEvaporationRate()
       { return m_brewery.boilEvaporationRate; };
-   Liter getBreweryMashDeadSpace() { return m_brewery.mashDeadSpace; };
-   Liter getBreweryKettleDeadSpace() { return m_brewery.kettleDeadSpace; };
-   Liter getBreweryWaterLostToMalt() { return m_brewery.waterLostToMalt; };
-   Liter getBreweryWaterLostToHops() { return m_brewery.waterLostToHops; };
+   Volume getBreweryMashDeadSpace() { return m_brewery.mashDeadSpace; };
+   Volume getBreweryKettleDeadSpace() { return m_brewery.kettleDeadSpace; };
+   Volume getBreweryWaterLostToMalt() { return m_brewery.waterLostToMalt; };
+   Volume getBreweryWaterLostToHops() { return m_brewery.waterLostToHops; };
    double getBreweryHopsUtilization() { return m_brewery.hopsUtilization; };
 
    double getObservedOG() { return m_observations.OG; };
    double getObservedFG() { return m_observations.FG; };
    double getObservedPreboilSG() { return m_observations.preboilSG; };
-   Liter getObservedPreboilVolume() { return m_observations.preboilVolume; };
-   Liter getObservedPostboilVolume() { return m_observations.postboilVolume; };
-   Liter getObservedFermenterVolume() {return m_observations.fermenterVolume;};
+   Volume getObservedPreboilVolume() { return m_observations.preboilVolume; };
+   Volume getObservedPostboilVolume() { return m_observations.postboilVolume; };
+   Volume getObservedFermenterVolume() {return m_observations.fermenterVolume;};
    double getObservedColor() { return m_observations.color; };
    double getObservedBitterness() { return m_observations.bitterness; };
    double getObservedBoilEvaporationRate();

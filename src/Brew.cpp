@@ -28,7 +28,8 @@ Brew::Brew(const brewery &brewery,
 
 void Brew::calculateStrikeWaterTemperatures()
 {
-   m_mashes.at(0).mashInTemperature = getStrikeWaterTemperature(m_mashes.at(0));
+   m_mashes.at(0).mashInTemperature
+      = getStrikeWaterTemperature(m_mashes.at(0));
    for ( unsigned int i = 1; i < m_mashes.size(); ++i ) {
       m_mashes.at(i).mashInTemperature
 	 = getStrikeWaterTemperature(m_mashes.at(i),
@@ -36,49 +37,33 @@ void Brew::calculateStrikeWaterTemperatures()
    }
 }
 
-Celsius Brew::getStrikeWaterTemperature(mash mash, Celsius fromTemperature)
+Temperature Brew::getStrikeWaterTemperature(mash mash, Temperature fromTemperature)
 {
    // Calculate strike water temperature using specific heat capacity, mass,
    // and temperature. Assuming speficic heat capacity of the resulting mash is
    // the mass-average of the constituences (grain, tun, and water).
-   double massFermentables = 0.0;
-   for ( auto f : m_fermentables ) massFermentables += f.weight/1e3; // to kg
-   double eGrain   = ( massFermentables
-		       * kConst::kGrainSpecificHeat
-		       * fromTemperature );
-   double eMashTun = ( m_brewery.mashTunMass
+   Mass massFermentables(SIUnit::kg(0.0));
+   for ( auto f : m_fermentables ) massFermentables += f.weight;
+   auto eGrain = massFermentables*kConst::kGrainSpecificHeat*fromTemperature;
+   auto eMashTun = ( m_brewery.mashTunMass
 		       * m_brewery.mashTunSpecificHeatCapacity
 		       * fromTemperature );
-   return ( ( ( kConst::kWaterSpecificHeat*mash.volume
+   return ( ( ( kConst::kWaterSpecificHeat*mash.volume*kConst::kWaterDensity
 		+ kConst::kGrainSpecificHeat*massFermentables
 		+ m_brewery.mashTunSpecificHeatCapacity*m_brewery.mashTunMass )
 	      * mash.temperature - eGrain - eMashTun )
-	    / (mash.volume*kConst::kWaterSpecificHeat));
+	    / (mash.volume*kConst::kWaterDensity*kConst::kWaterSpecificHeat));
 }
 
-Celsius Brew::getStrikeWaterTemperature(mash mash)
+Temperature Brew::getStrikeWaterTemperature(mash mash)
 {
-   // Calculate strike water temperature using specific heat capacity, mass,
-   // and temperature. Assuming speficic heat capacity of the resulting mash is
-   // the mass-average of the constituences (grain, tun, and water).
-   double massFermentables = 0.0;
-   for ( auto f : m_fermentables ) massFermentables += f.weight/1e3; // to kg
-   double eGrain   = ( massFermentables
-		       * kConst::kGrainSpecificHeat
-		       * m_brewery.grainMashInTemperature );
-   double eMashTun = ( m_brewery.mashTunMass
-		       * m_brewery.mashTunSpecificHeatCapacity
-		       * m_brewery.mashTunTemperature );
-   return ( ( ( kConst::kWaterSpecificHeat*mash.volume
-		+ kConst::kGrainSpecificHeat*massFermentables
-		+ m_brewery.mashTunSpecificHeatCapacity*m_brewery.mashTunMass )
-	      * mash.temperature - eGrain - eMashTun )
-	    / (mash.volume*kConst::kWaterSpecificHeat));
+   return this->getStrikeWaterTemperature(mash,
+					  m_brewery.grainMashInTemperature);
 }
 
-Liter Brew::getPreboilVolume()
+Volume Brew::getPreboilVolume()
 {
-   Liter volume = 0.0_l;
+   Volume volume = 0.0_l;
    for ( auto m : m_mashes ) {
       volume += m.volume;
    }
@@ -109,18 +94,18 @@ double Brew::getBoilDuration()
    return boilTime;
 }
 
-Liter Brew::getPostboilVolume()
+Volume Brew::getPostboilVolume()
 {
    return ( getPreboilVolume() 
 	    - m_brewery.boilEvaporationRate*getBoilDuration()/60.0 );
 }
 
-Liter Brew::getVolumeAtTime(double boilTime)
+Volume Brew::getVolumeAtTime(double boilTime)
 {
    return getPreboilVolume() - m_brewery.boilEvaporationRate*boilTime/60.0;
 }
 
-Liter Brew::getVolumeIntoFermenter()
+Volume Brew::getVolumeIntoFermenter()
 {
    double hopsMass = 0.0;
    for ( auto h : m_hops ) {
@@ -156,7 +141,7 @@ double Brew::getTotalIBU()
    return ibu;
 }
 
-double Brew::getOechle(fermentable f, Liter volume)
+double Brew::getOechle(fermentable f, Volume volume)
 {
    double oechle = 0.0;
    oechle += 46.0*f.extract*f.weight*kConst::kkg2lbs*1e-5;
@@ -251,8 +236,8 @@ double Brew::getColorMoreyEBC()
 
 double Brew::getObservedBoilEvaporationRate()
 {
-   Liter preboilVolume = this->getObservedPreboilVolume();
-   Liter postboilVolume = this->getObservedPostboilVolume();
+   Volume preboilVolume = this->getObservedPreboilVolume();
+   Volume postboilVolume = this->getObservedPostboilVolume();
    double boilDuration = this->getBoilDuration();
    if (    ( preboilVolume < 0.99*kConst::kDoubleUndefined
 	     || preboilVolume > 1.01*kConst::kDoubleUndefined )
