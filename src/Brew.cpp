@@ -36,7 +36,7 @@ void Brew::calculateStrikeWaterTemperatures()
    }
 }
 
-double Brew::getStrikeWaterTemperature(mash mash, double fromTemperature)
+Celsius Brew::getStrikeWaterTemperature(mash mash, Celsius fromTemperature)
 {
    // Calculate strike water temperature using specific heat capacity, mass,
    // and temperature. Assuming speficic heat capacity of the resulting mash is
@@ -56,7 +56,7 @@ double Brew::getStrikeWaterTemperature(mash mash, double fromTemperature)
 	    / (mash.volume*kConst::kWaterSpecificHeat));
 }
 
-double Brew::getStrikeWaterTemperature(mash mash)
+Celsius Brew::getStrikeWaterTemperature(mash mash)
 {
    // Calculate strike water temperature using specific heat capacity, mass,
    // and temperature. Assuming speficic heat capacity of the resulting mash is
@@ -76,9 +76,9 @@ double Brew::getStrikeWaterTemperature(mash mash)
 	    / (mash.volume*kConst::kWaterSpecificHeat));
 }
 
-double Brew::getPreboilVolume()
+Liter Brew::getPreboilVolume()
 {
-   double volume = 0.0;
+   Liter volume = 0.0_l;
    for ( auto m : m_mashes ) {
       volume += m.volume;
    }
@@ -109,18 +109,18 @@ double Brew::getBoilDuration()
    return boilTime;
 }
 
-double Brew::getPostboilVolume()
+Liter Brew::getPostboilVolume()
 {
    return ( getPreboilVolume() 
 	    - m_brewery.boilEvaporationRate*getBoilDuration()/60.0 );
 }
 
-double Brew::getVolumeAtTime(double boilTime)
+Liter Brew::getVolumeAtTime(double boilTime)
 {
    return getPreboilVolume() - m_brewery.boilEvaporationRate*boilTime/60.0;
 }
 
-double Brew::getVolumeIntoFermenter()
+Liter Brew::getVolumeIntoFermenter()
 {
    double hopsMass = 0.0;
    for ( auto h : m_hops ) {
@@ -156,7 +156,7 @@ double Brew::getTotalIBU()
    return ibu;
 }
 
-double Brew::getOechle(fermentable f, double volume)
+double Brew::getOechle(fermentable f, Liter volume)
 {
    double oechle = 0.0;
    oechle += 46.0*f.extract*f.weight*kConst::kkg2lbs*1e-5;
@@ -251,8 +251,8 @@ double Brew::getColorMoreyEBC()
 
 double Brew::getObservedBoilEvaporationRate()
 {
-   double preboilVolume = this->getObservedPreboilVolume();
-   double postboilVolume = this->getObservedPostboilVolume();
+   Liter preboilVolume = this->getObservedPreboilVolume();
+   Liter postboilVolume = this->getObservedPostboilVolume();
    double boilDuration = this->getBoilDuration();
    if (    ( preboilVolume < 0.99*kConst::kDoubleUndefined
 	     || preboilVolume > 1.01*kConst::kDoubleUndefined )
